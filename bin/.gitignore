@@ -1,5 +1,5 @@
 HELP.md
-/target/
+target/
 !.mvn/wrapper/maven-wrapper.jar
 !**/src/main/**/target/
 !**/src/test/**/target/
@@ -12,10 +12,6 @@ HELP.md
 .settings
 .springBeans
 .sts4-cache
-*.bin
-.md
-*.class
-*.gitattributes
 
 ### IntelliJ IDEA ###
 .idea

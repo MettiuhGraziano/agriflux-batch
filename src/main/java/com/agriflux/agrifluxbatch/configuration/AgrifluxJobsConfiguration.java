@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch;
+package com.agriflux.agrifluxbatch.configuration;
 
 import javax.sql.DataSource;
 
@@ -8,6 +8,7 @@ import org.springframework.batch.core.configuration.annotation.EnableBatchProces
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.file.FlatFileItemReader;
@@ -15,6 +16,7 @@ import org.springframework.batch.item.file.FlatFileItemWriter;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.batch.item.file.builder.FlatFileItemWriterBuilder;
 import org.springframework.batch.item.file.mapping.DefaultLineMapper;
+import org.springframework.batch.item.file.transform.BeanWrapperFieldExtractor;
 import org.springframework.batch.item.file.transform.DelimitedLineAggregator;
 import org.springframework.batch.item.file.transform.DelimitedLineTokenizer;
 import org.springframework.context.annotation.Bean;
@@ -26,6 +28,7 @@ import org.springframework.transaction.PlatformTransactionManager;
 
 import com.agriflux.agrifluxbatch.model.StaticMetadata;
 import com.agriflux.agrifluxbatch.model.StaticMetadataFieldSetMapper;
+import com.agriflux.agrifluxbatch.model.StaticRandomMetadata;
 
 @Configuration
 @EnableBatchProcessing(dataSourceRef = "batchDataSource")
@@ -38,8 +41,6 @@ public class AgrifluxJobsConfiguration {
 				.generateUniqueName(true).build();
 	}
 
-	//TODO Definire i vari job taggandoli come @Bean
-    
     @Bean
     Job testJob(JobRepository jobRepository, Step testStep) {
         return new JobBuilder("testJob", jobRepository)
@@ -47,27 +48,25 @@ public class AgrifluxJobsConfiguration {
                          .build();
     }
     
-	//TODO Definire gli step da inserire nei job
-	
 	@Bean
     Step testStep(JobRepository jobRepository, 
     		PlatformTransactionManager batchTransactionManager,
     		ItemReader<StaticMetadata> staticMetadataFileReader,
-    		ItemWriter<StaticMetadata> staticMetadataFileItemWriter) { 
+    		ItemWriter<StaticRandomMetadata> staticMetadataFileWriter,
+    		ItemProcessor<StaticMetadata, StaticRandomMetadata> staticMetadataProcessor) { 
     	return new StepBuilder("testStep", jobRepository)
-    				.<StaticMetadata, StaticMetadata>chunk(10, batchTransactionManager) 
+    				.<StaticMetadata, StaticRandomMetadata>chunk(10, batchTransactionManager) 
     				.reader(staticMetadataFileReader)
-    				.writer(staticMetadataFileItemWriter)
+    				.processor(staticMetadataProcessor)
+    				.writer(staticMetadataFileWriter)
     				.build();
     }
-    
-    //TODO Definire itemReader e itemWriter
     
     @Bean
     FlatFileItemReader<StaticMetadata> staticMetadataFileReader() {
     	DefaultLineMapper<StaticMetadata> lineMapper = new DefaultLineMapper<StaticMetadata>();
-    	DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
     	
+    	DelimitedLineTokenizer lineTokenizer = new DelimitedLineTokenizer();
     	lineTokenizer.setNames("temperatura", "umidita", "quantita_raccolto", "costo_raccolto");
     	
     	lineMapper.setLineTokenizer(lineTokenizer);
@@ -82,15 +81,24 @@ public class AgrifluxJobsConfiguration {
     }
     
 	@Bean
-	FlatFileItemWriter<StaticMetadata> staticMetadataFileItemWriter() {
-		DelimitedLineAggregator<StaticMetadata> lineAggregator = new DelimitedLineAggregator<>();
-		lineAggregator.setDelimiter("||");
+	FlatFileItemWriter<StaticRandomMetadata> staticMetadataFileWriter() {
+		BeanWrapperFieldExtractor<StaticRandomMetadata> fieldExtractor = new BeanWrapperFieldExtractor<>();
+		fieldExtractor.setNames(new String[] {"temperatura", "umidita", "quantita_raccolto", "costo_raccolto"});
+		fieldExtractor.afterPropertiesSet();
+		
+		DelimitedLineAggregator<StaticRandomMetadata> lineAggregator = new DelimitedLineAggregator<>();
+		lineAggregator.setDelimiter(" / ");
+		lineAggregator.setFieldExtractor(fieldExtractor);
 
-		return new FlatFileItemWriterBuilder<StaticMetadata>().name("staticMetadataFileItemWriter")
-				.resource(new FileSystemResource("src/main/resources/output.txt")).lineAggregator(lineAggregator)
+		return new FlatFileItemWriterBuilder<StaticRandomMetadata>()
+				.name("staticMetadataFileWriter")
+				.resource(new FileSystemResource("src/main/resources/output.txt"))
+				.lineAggregator(lineAggregator)
 				.build();
 	}
 	
-	//TODO Creare itemProcessor per manipolare i dati che escono dall'itemReader e inviarli all'itemWriter
-    
+	@Bean
+    GenerateStaticRandomMetadataProcessor staticMetadataProcessor() {
+    	return new GenerateStaticRandomMetadataProcessor();
+    }
 }

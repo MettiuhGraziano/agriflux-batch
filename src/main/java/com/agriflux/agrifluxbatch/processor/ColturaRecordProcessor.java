@@ -4,9 +4,9 @@ import java.util.Random;
 
 import org.springframework.batch.item.ItemProcessor;
 
+import com.agriflux.agrifluxbatch.enumeratori.TipoProdotto;
 import com.agriflux.agrifluxbatch.model.ColturaMetadata;
 import com.agriflux.agrifluxbatch.model.ColturaRecord;
-import com.agriflux.agrifluxbatch.model.TipoProdotto;
 
 public class ColturaRecordProcessor implements ItemProcessor<ColturaMetadata, ColturaRecord>{
 

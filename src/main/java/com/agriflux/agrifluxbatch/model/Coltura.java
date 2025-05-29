@@ -1,21 +1,31 @@
 package com.agriflux.agrifluxbatch.model;
 
+import java.util.Date;
+
+import jakarta.persistence.Entity;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+
+@Entity(name = "DATI_COLTURA")
 public class Coltura {
 	
-	private int id;
+	@Id
+	@GeneratedValue(strategy = GenerationType.AUTO)
+	private long idColtura;
 	
 	private String prodottoColtivato;
 	
-	private String annoMeseSemina;
+	private Date annoMeseSemina;
 	
-	private String annoMeseRaccolto;
+	private Date annoMeseRaccolto;
 	
-	public int getId() {
-		return id;
+	public long getIdColtura() {
+		return idColtura;
 	}
 	
-	public void setId(int id) {
-		this.id = id;
+	public void setIdColtura(long idColtura) {
+		this.idColtura = idColtura;
 	}
 	
 	public String getProdottoColtivato() {
@@ -26,19 +36,19 @@ public class Coltura {
 		this.prodottoColtivato = prodottoColtivato;
 	}
 	
-	public String getAnnoMeseSemina() {
+	public Date getAnnoMeseSemina() {
 		return annoMeseSemina;
 	}
 	
-	public void setAnnoMeseSemina(String annoMeseSemina) {
+	public void setAnnoMeseSemina(Date annoMeseSemina) {
 		this.annoMeseSemina = annoMeseSemina;
 	}
 	
-	public String getAnnoMeseRaccolto() {
+	public Date getAnnoMeseRaccolto() {
 		return annoMeseRaccolto;
 	}
 	
-	public void setAnnoMeseRaccolto(String annoMeseRaccolto) {
+	public void setAnnoMeseRaccolto(Date annoMeseRaccolto) {
 		this.annoMeseRaccolto = annoMeseRaccolto;
 	}
 	

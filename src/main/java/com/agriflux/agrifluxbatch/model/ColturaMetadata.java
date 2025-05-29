@@ -1,5 +1,7 @@
 package com.agriflux.agrifluxbatch.model;
 
-public record ColturaMetadata(String annoMeseSemina, String annoMeseRaccolto) {
+import java.util.Date;
+
+public record ColturaMetadata(Date annoMeseSemina, Date annoMeseRaccolto) {
 
 }

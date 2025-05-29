@@ -1,10 +1,13 @@
 package com.agriflux.agrifluxbatch.configuration;
 
+import java.util.List;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
 import org.springframework.batch.core.Step;
 import org.springframework.batch.core.configuration.annotation.EnableBatchProcessing;
+import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
@@ -24,10 +27,13 @@ import org.springframework.jdbc.support.JdbcTransactionManager;
 
 import com.agriflux.agrifluxbatch.model.ColturaMetadata;
 import com.agriflux.agrifluxbatch.model.ColturaRecord;
+import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
+import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
 import com.agriflux.agrifluxbatch.processor.ColturaRecordProcessor;
+import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
 
 @Configuration
-@EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "batchTransactionManager")
+@EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "transactionManager")
 public class AgrifluxJobsConfiguration {
 	
 	@Bean
@@ -39,24 +45,29 @@ public class AgrifluxJobsConfiguration {
 	}
 	
 	@Bean
-	JdbcTransactionManager batchTransactionManager(DataSource dataSource) {
+	JdbcTransactionManager transactionManager(DataSource dataSource) {
 		return new JdbcTransactionManager(dataSource);
 	}
 	
+	//JOB SIMULATORE
+	
 	@Bean
-	Job simulatorJob(JobRepository jobRepository, Step createColturaStep) {
+	Job simulatorJob(JobRepository jobRepository, Step createColturaStep, Step createDatiAmbientaliStep) {
 		return new JobBuilder("simulatorJob", jobRepository)
 				.start(createColturaStep)
+				.next(createDatiAmbientaliStep)
 				.build();
 	}
 	
+	//PRIMO STEP
+	
 	@Bean
 	Step createColturaStep(JobRepository jobRepository, 
-			JdbcTransactionManager batchTransactionManager,
+			JdbcTransactionManager transactionManager,
 			ItemReader<ColturaMetadata> colturaMetadataFileReader,
 			ItemWriter<ColturaRecord> colturaDataTableWriter,
 			ItemProcessor<ColturaMetadata, ColturaRecord> colturaRecordProcessor) {
-		return new StepBuilder("createColturaStep", jobRepository).<ColturaMetadata, ColturaRecord>chunk(5, batchTransactionManager)
+		return new StepBuilder("createColturaStep", jobRepository).<ColturaMetadata, ColturaRecord>chunk(10, transactionManager)
 					.reader(colturaMetadataFileReader)
 					.processor(colturaRecordProcessor)
 					.writer(colturaDataTableWriter)
@@ -70,7 +81,7 @@ public class AgrifluxJobsConfiguration {
 	            .resource(new FileSystemResource("src/main/resources/coltura-metadata.txt"))
 	            .delimited()
 	            .names("annoMeseSemina", "annoMeseRaccolto")
-	            .targetType(ColturaMetadata.class)
+	            .fieldSetMapper(new ColturaMetadataFieldSetMapper())
 	            .build();
 	}
 	
@@ -90,6 +101,54 @@ public class AgrifluxJobsConfiguration {
 	@Bean
 	ColturaRecordProcessor colturaRecordProcessor() {
 		return new ColturaRecordProcessor();
+	}
+	
+	//SECONDO STEP
+	
+	@Bean
+	Step createDatiAmbientaliStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiAmbientaliMetadata> datiAmbientaliItemReader,
+			ItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter,
+			ItemProcessor<DatiAmbientaliMetadata, DatiAmbientaliRecord> datiAmbientaliEnricherProcessor) {
+		return new StepBuilder("createDatiAmbientaliStep", jobRepository).<DatiAmbientaliMetadata, DatiAmbientaliRecord>chunk(10, transactionManager)
+					.reader(datiAmbientaliItemReader)
+					.processor(datiAmbientaliEnricherProcessor)
+					.writer(datiAmbientaliDataTableWriter)
+					.build();
+	}
+	
+	@Bean
+	@StepScope
+	FlatFileItemReader<DatiAmbientaliMetadata> datiAmbientaliItemReader() {
+		return new FlatFileItemReaderBuilder<DatiAmbientaliMetadata>()
+				.name("datiAmbientaliItemReader")
+				.resource(new FileSystemResource("src/main/resources/dati-ambientali-metadata.txt"))
+				.delimited()
+				.names("temperaturaMedia", "umiditaMedia", "precipitazioni", "irraggiamentoMedio",
+						"ombreggiamentoMedio", "dataRilevazione", "fkIdColtura")
+				.targetType(DatiAmbientaliMetadata.class)
+				.build();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_AMBIENTALI (TEMPERATURA_MEDIA, UMIDITA_MEDIA, PRECIPITAZIONI, 
+						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, ANNO_MESE_RILEVAZIONE, FK_ID_COLTURA)
+				VALUES (:temperaturaMedia, :umiditaMedia, :precipitazioni, :irraggiamentoMedio, 
+						:ombreggiamentoMedio, :annoMeseRilevazione, :fkIdColtura)
+				""";
+	    return new JdbcBatchItemWriterBuilder<DatiAmbientaliRecord>()
+	            .dataSource(dataSource)
+	            .sql(sql)
+	            .beanMapped()
+	            .build();
+	}
+	
+	@Bean
+	DatiAmbientaliEnricherProcessor datiAmbientaliEnricherProcessor(){
+		return new DatiAmbientaliEnricherProcessor();
 	}
 
 }

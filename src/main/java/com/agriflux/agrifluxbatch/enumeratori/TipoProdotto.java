@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.model;
+package com.agriflux.agrifluxbatch.enumeratori;
 
 public enum TipoProdotto {
 

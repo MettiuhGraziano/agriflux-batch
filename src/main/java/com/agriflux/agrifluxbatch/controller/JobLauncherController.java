@@ -29,16 +29,16 @@ public class JobLauncherController {
 	//TODO PER GARANTIRE UNICITA' NEI SINGOLI JOB INSERIRE UN ID INCREMENTALE O UN PARAMETRO CHE CAMBIA AD OGNI LANCIO
 	// USANDO UN METODO POST POSSO PASSARE I PARAMETRI DI LANCIO IN MANIERA DINAMICA
 	// RICORDA CHE NEL CONTROLLER NON SI ESEGUONO LOGICHE DI BUSINESS MA SI RITORNA SOLO LA ResponseEntity<String>
-    @PostMapping("/testJob.html")
-    public void testJob() throws Exception{
+    @PostMapping("/simulatorJob.html")
+    public void simulatorJob() throws Exception{
     	
-    	LOGGER.info("Inizio fase di lancio del job: {}", jobRegistry.getJob("testJob"));
+    	LOGGER.info("Inizio fase di lancio del job: {}", jobRegistry.getJob("simulatorJob"));
     	
     	JobParameters params = new JobParametersBuilder()
     		    .addLong("time", System.currentTimeMillis())
     		    .toJobParameters();
     	
-        jobLauncher.run(jobRegistry.getJob("testJob"), params);
+        jobLauncher.run(jobRegistry.getJob("simulatorJob"), params);
     }
     
     //TODO CENSIRE METODO GET CHE RITORNA LO STATO DI ESECUZIONE DEL JOB "X"

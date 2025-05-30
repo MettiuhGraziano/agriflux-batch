@@ -1,6 +1,6 @@
 package com.agriflux.agrifluxbatch.enumeratori;
 
-public enum TipoProdotto {
+public enum TipoProdottoEnum {
 
 	POMODORO(1),
 	LATTUGA(2),
@@ -11,7 +11,7 @@ public enum TipoProdotto {
 	
 	private int codiceProdotto;
 	
-	private TipoProdotto(int codiceProdotto) {
+	TipoProdottoEnum(int codiceProdotto) {
 		this.codiceProdotto = codiceProdotto;
 	}
 

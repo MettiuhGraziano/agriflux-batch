@@ -16,9 +16,9 @@ public class Coltura {
 	
 	private String prodottoColtivato;
 	
-	private Date annoMeseSemina;
+	private Date dataSemina;
 	
-	private Date annoMeseRaccolto;
+	private Date dataRaccolto;
 	
 	public long getIdColtura() {
 		return idColtura;
@@ -36,20 +36,20 @@ public class Coltura {
 		this.prodottoColtivato = prodottoColtivato;
 	}
 	
-	public Date getAnnoMeseSemina() {
-		return annoMeseSemina;
+	public Date getDataSemina() {
+		return dataSemina;
 	}
 	
-	public void setAnnoMeseSemina(Date annoMeseSemina) {
-		this.annoMeseSemina = annoMeseSemina;
+	public void setDataSemina(Date dataSemina) {
+		this.dataSemina = dataSemina;
 	}
 	
-	public Date getAnnoMeseRaccolto() {
-		return annoMeseRaccolto;
+	public Date getDataRaccolto() {
+		return dataRaccolto;
 	}
 	
-	public void setAnnoMeseRaccolto(Date annoMeseRaccolto) {
-		this.annoMeseRaccolto = annoMeseRaccolto;
+	public void setDataRaccolto(Date dataRaccolto) {
+		this.dataRaccolto = dataRaccolto;
 	}
 	
 }

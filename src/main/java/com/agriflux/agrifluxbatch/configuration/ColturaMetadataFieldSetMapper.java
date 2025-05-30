@@ -11,6 +11,9 @@ import com.agriflux.agrifluxbatch.model.ColturaMetadata;
 
 public class ColturaMetadataFieldSetMapper implements FieldSetMapper<ColturaMetadata> {
 
+	private static final String DATA_RACCOLTO = "dataRaccolto";
+	private static final String DATA_SEMINA = "dataSemina";
+	
 	private final SimpleDateFormat dateFormat = new SimpleDateFormat("yyyyMMdd");
 
     @Override
@@ -18,8 +21,8 @@ public class ColturaMetadataFieldSetMapper implements FieldSetMapper<ColturaMeta
     	
     	ColturaMetadata record = null;
         try {
-            Date semina = dateFormat.parse(fieldSet.readString("annoMeseSemina"));
-            Date raccolto = dateFormat.parse(fieldSet.readString("annoMeseRaccolto"));
+            Date semina = dateFormat.parse(fieldSet.readString(DATA_SEMINA));
+            Date raccolto = dateFormat.parse(fieldSet.readString(DATA_RACCOLTO));
             
             record = new ColturaMetadata(semina, raccolto);
             

@@ -1,7 +1,5 @@
 package com.agriflux.agrifluxbatch.configuration;
 
-import java.util.List;
-
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -29,8 +27,11 @@ import com.agriflux.agrifluxbatch.model.ColturaMetadata;
 import com.agriflux.agrifluxbatch.model.ColturaRecord;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
+import com.agriflux.agrifluxbatch.model.DatiMorfologiciMetadata;
+import com.agriflux.agrifluxbatch.model.DatiMorfologiciRecord;
 import com.agriflux.agrifluxbatch.processor.ColturaRecordProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
+import com.agriflux.agrifluxbatch.processor.DatiMorfologiciEnricherProcessor;
 
 @Configuration
 @EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "transactionManager")
@@ -52,10 +53,13 @@ public class AgrifluxJobsConfiguration {
 	//JOB SIMULATORE
 	
 	@Bean
-	Job simulatorJob(JobRepository jobRepository, Step createColturaStep, Step createDatiAmbientaliStep) {
+	Job simulatorJob(JobRepository jobRepository, Step createColturaStep, Step createDatiAmbientaliStep,
+			Step createDatiMorfologiciStep) {
 		return new JobBuilder("simulatorJob", jobRepository)
 				.start(createColturaStep)
 				.next(createDatiAmbientaliStep)
+				.next(createDatiMorfologiciStep)
+				.preventRestart()
 				.build();
 	}
 	
@@ -80,27 +84,27 @@ public class AgrifluxJobsConfiguration {
 	            .name("colturaMetadataFileReader")
 	            .resource(new FileSystemResource("src/main/resources/coltura-metadata.txt"))
 	            .delimited()
-	            .names("annoMeseSemina", "annoMeseRaccolto")
+	            .names("dataSemina", "dataRaccolto")
 	            .fieldSetMapper(new ColturaMetadataFieldSetMapper())
-	            .build();
-	}
-	
-	@Bean
-	JdbcBatchItemWriter<ColturaRecord> colturaDataTableWriter(DataSource dataSource) {
-		String sql = """
-				INSERT INTO DATI_COLTURA (PRODOTTO_COLTIVATO, ANNO_MESE_SEMINA, ANNO_MESE_RACCOLTO)
-				VALUES (:prodottoColtivato, :annoMeseSemina, :annoMeseRaccolto)
-				""";
-	    return new JdbcBatchItemWriterBuilder<ColturaRecord>()
-	            .dataSource(dataSource)
-	            .sql(sql)
-	            .beanMapped()
 	            .build();
 	}
 	
 	@Bean
 	ColturaRecordProcessor colturaRecordProcessor() {
 		return new ColturaRecordProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<ColturaRecord> colturaDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_COLTURA (PRODOTTO_COLTIVATO, DATA_SEMINA, DATA_RACCOLTO)
+				VALUES (:prodottoColtivato, :dataSemina, :dataRaccolto)
+				""";
+	    return new JdbcBatchItemWriterBuilder<ColturaRecord>()
+	            .dataSource(dataSource)
+	            .sql(sql)
+	            .beanMapped()
+	            .build();
 	}
 	
 	//SECONDO STEP
@@ -132,12 +136,17 @@ public class AgrifluxJobsConfiguration {
 	}
 	
 	@Bean
+	DatiAmbientaliEnricherProcessor datiAmbientaliEnricherProcessor(){
+		return new DatiAmbientaliEnricherProcessor();
+	}
+	
+	@Bean
 	JdbcBatchItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter(DataSource dataSource) {
 		String sql = """
 				INSERT INTO DATI_AMBIENTALI (TEMPERATURA_MEDIA, UMIDITA_MEDIA, PRECIPITAZIONI, 
-						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, ANNO_MESE_RILEVAZIONE, FK_ID_COLTURA)
+						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, DATA_RILEVAZIONE, FK_ID_COLTURA)
 				VALUES (:temperaturaMedia, :umiditaMedia, :precipitazioni, :irraggiamentoMedio, 
-						:ombreggiamentoMedio, :annoMeseRilevazione, :fkIdColtura)
+						:ombreggiamentoMedio, :dataRilevazione, :fkIdColtura)
 				""";
 	    return new JdbcBatchItemWriterBuilder<DatiAmbientaliRecord>()
 	            .dataSource(dataSource)
@@ -146,9 +155,51 @@ public class AgrifluxJobsConfiguration {
 	            .build();
 	}
 	
+	// TODO TERZO STEP
+	
 	@Bean
-	DatiAmbientaliEnricherProcessor datiAmbientaliEnricherProcessor(){
-		return new DatiAmbientaliEnricherProcessor();
+	Step createDatiMorfologiciStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiMorfologiciMetadata> datiMorfologiciItemReader,
+			ItemProcessor<DatiMorfologiciMetadata, DatiMorfologiciRecord> datiMorfologiciEnricherProcessor,
+			ItemWriter<DatiMorfologiciRecord> datiMorfologiciDataTableWriter) {
+		return new StepBuilder("createDatiMorfologiciStep", jobRepository).<DatiMorfologiciMetadata, DatiMorfologiciRecord>chunk(10, transactionManager)
+				.reader(datiMorfologiciItemReader)
+				.processor(datiMorfologiciEnricherProcessor)
+				.writer(datiMorfologiciDataTableWriter)
+				.build();
 	}
-
+	
+	@Bean
+	@StepScope
+	FlatFileItemReader<DatiMorfologiciMetadata> datiMorfologiciItemReader() {
+		return new FlatFileItemReaderBuilder<DatiMorfologiciMetadata>()
+				.name("datiMorfologiciItemReader")
+				.resource(new FileSystemResource("src/main/resources/dati-morfologici-metadata.txt"))
+				.delimited()
+				.names("estensioneTerreno", "esposizione",
+						"litologia", "fkIdColtura")
+				.fieldSetMapper(new DatiMorfologiciFieldSetMapper())
+				.build();
+	}
+	
+	@Bean
+	DatiMorfologiciEnricherProcessor datiMorfologiciEnricherProcessor() {
+		return new DatiMorfologiciEnricherProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiMorfologiciRecord> datiMorfologiciDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_MORFOLOGICI (ESTENSIONE_TERRENO, PENDENZA, ESPOSIZIONE, 
+						LITOLOGIA, FK_ID_COLTURA)
+				VALUES (:estensioneTerreno, :pendenza, :esposizione, :litologia, :fkIdColtura)
+				""";
+	    return new JdbcBatchItemWriterBuilder<DatiMorfologiciRecord>()
+	            .dataSource(dataSource)
+	            .sql(sql)
+	            .beanMapped()
+	            .build();
+	}
+	
 }

@@ -34,9 +34,7 @@ public class DatiMorfologiciEnricherProcessor extends DatiProcessor implements I
 			}
 		}
 		
-		long fkIdColtura = Long.parseLong(item.fkIdColtura());
-		
-		return new DatiMorfologiciRecord(estensioneTerreno, pendenza, esposizione, litologia, fkIdColtura);
+		return new DatiMorfologiciRecord(estensioneTerreno, pendenza, esposizione, litologia);
 	}
 
 }

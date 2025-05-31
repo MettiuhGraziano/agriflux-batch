@@ -8,7 +8,6 @@ import com.agriflux.agrifluxbatch.model.DatiMorfologiciMetadata;
 
 public class DatiMorfologiciFieldSetMapper implements FieldSetMapper<DatiMorfologiciMetadata>{
 
-	private static final String FK_ID_COLTURA = "fkIdColtura";
 	private static final String LITOLOGIA = "litologia";
 	private static final String ESPOSIZIONE = "esposizione";
 	private static final String ESTENSIONE_TERRENO = "estensioneTerreno";
@@ -19,10 +18,9 @@ public class DatiMorfologiciFieldSetMapper implements FieldSetMapper<DatiMorfolo
 		String estensioneTerreno = fieldSet.readString(ESTENSIONE_TERRENO);
 		String esposizione = fieldSet.readString(ESPOSIZIONE);
 		String litologia = fieldSet.readString(LITOLOGIA);
-		String fkIdColtura = fieldSet.readString(FK_ID_COLTURA);
 		
 		return new DatiMorfologiciMetadata(estensioneTerreno, esposizione,
-				litologia, fkIdColtura);
+				litologia);
 	}
 
 }

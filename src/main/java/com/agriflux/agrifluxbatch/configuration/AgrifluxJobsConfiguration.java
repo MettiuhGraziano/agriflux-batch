@@ -29,9 +29,12 @@ import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
 import com.agriflux.agrifluxbatch.model.DatiMorfologiciMetadata;
 import com.agriflux.agrifluxbatch.model.DatiMorfologiciRecord;
+import com.agriflux.agrifluxbatch.model.DatiTerrenoMetadata;
+import com.agriflux.agrifluxbatch.model.DatiTerrenoRecord;
 import com.agriflux.agrifluxbatch.processor.ColturaRecordProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiMorfologiciEnricherProcessor;
+import com.agriflux.agrifluxbatch.processor.DatiTerrenoEnricherProcessor;
 
 @Configuration
 @EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "transactionManager")
@@ -50,15 +53,16 @@ public class AgrifluxJobsConfiguration {
 		return new JdbcTransactionManager(dataSource);
 	}
 	
-	//JOB SIMULATORE
+	//JOB SIMULAZIONE
 	
 	@Bean
 	Job simulatorJob(JobRepository jobRepository, Step createColturaStep, Step createDatiAmbientaliStep,
-			Step createDatiMorfologiciStep) {
+			Step createDatiMorfologiciStep, Step createDatiTerrenoStep) {
 		return new JobBuilder("simulatorJob", jobRepository)
 				.start(createColturaStep)
 				.next(createDatiAmbientaliStep)
 				.next(createDatiMorfologiciStep)
+				.next(createDatiTerrenoStep)
 				.preventRestart()
 				.build();
 	}
@@ -155,7 +159,7 @@ public class AgrifluxJobsConfiguration {
 	            .build();
 	}
 	
-	// TODO TERZO STEP
+	//TERZO STEP
 	
 	@Bean
 	Step createDatiMorfologiciStep(JobRepository jobRepository, 
@@ -177,9 +181,8 @@ public class AgrifluxJobsConfiguration {
 				.name("datiMorfologiciItemReader")
 				.resource(new FileSystemResource("src/main/resources/dati-morfologici-metadata.txt"))
 				.delimited()
-				.names("estensioneTerreno", "esposizione",
-						"litologia", "fkIdColtura")
-				.fieldSetMapper(new DatiMorfologiciFieldSetMapper())
+				.names("estensioneTerreno", "esposizione", "litologia")
+				.targetType(DatiMorfologiciMetadata.class)
 				.build();
 	}
 	
@@ -191,9 +194,8 @@ public class AgrifluxJobsConfiguration {
 	@Bean
 	JdbcBatchItemWriter<DatiMorfologiciRecord> datiMorfologiciDataTableWriter(DataSource dataSource) {
 		String sql = """
-				INSERT INTO DATI_MORFOLOGICI (ESTENSIONE_TERRENO, PENDENZA, ESPOSIZIONE, 
-						LITOLOGIA, FK_ID_COLTURA)
-				VALUES (:estensioneTerreno, :pendenza, :esposizione, :litologia, :fkIdColtura)
+				INSERT INTO DATI_MORFOLOGICI (ESTENSIONE_TERRENO, PENDENZA, ESPOSIZIONE, LITOLOGIA)
+				VALUES (:estensioneTerreno, :pendenza, :esposizione, :litologia)
 				""";
 	    return new JdbcBatchItemWriterBuilder<DatiMorfologiciRecord>()
 	            .dataSource(dataSource)
@@ -201,5 +203,56 @@ public class AgrifluxJobsConfiguration {
 	            .beanMapped()
 	            .build();
 	}
+	
+	//QUARTO STEP
+	
+	@Bean
+	Step createDatiTerrenoStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiTerrenoMetadata> datiTerrenoItemReader,
+			ItemProcessor<DatiTerrenoMetadata, DatiTerrenoRecord> datiTerrenoErnicherProcessor,
+			ItemWriter<DatiTerrenoRecord> datiTerrenoDataTableWriter) {
+		return new StepBuilder("createDatiTerrenoStep", jobRepository).<DatiTerrenoMetadata, DatiTerrenoRecord>chunk(10, transactionManager)
+				.reader(datiTerrenoItemReader)
+				.processor(datiTerrenoErnicherProcessor)
+				.writer(datiTerrenoDataTableWriter)
+				.build();
+	}
+	
+	@Bean
+	@StepScope
+	FlatFileItemReader<DatiTerrenoMetadata> datiTerrenoItemReader(){
+		return new FlatFileItemReaderBuilder<DatiTerrenoMetadata>()
+				.name("datiTerrenoItemReader")
+				.resource(new FileSystemResource("src/main/resources/dati-terreno-metadata.txt"))
+				.delimited()
+				.names("phSuolo", "umidita", "capacitaAssorbente", "porosita", "temperatura", 
+						"disponibilitaIrrigua", "dataRilevazione", "fkIdColtura", "fkIdMorfologia")
+				.fieldSetMapper(new DatiTerrenoFieldSetMapper())
+				.build();
+		
+	}
+	
+	@Bean
+	DatiTerrenoEnricherProcessor datiTerrenoErnicherProcessor() {
+		return new DatiTerrenoEnricherProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiTerrenoRecord> datiTerrenoDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_TERRENO (PH_SUOLO, UMIDITA, CAPACITA_ASSORBENTE, POROSITA, TEMPERATURA, 
+					DISPONIBILITA_IRRIGUA, DATA_RILEVAZIONE, FK_ID_COLTURA, FK_ID_MORFOLOGIA)
+				VALUES (:phSuolo, :umidita, :capacitaAssorbente, :porosita, :temperatura, :disponibilitaIrrigua,
+					:dataRilevazione, :fkIdColtura, :fkIdMorfologia)
+				""";
+	    return new JdbcBatchItemWriterBuilder<DatiTerrenoRecord>()
+	            .dataSource(dataSource)
+	            .sql(sql)
+	            .beanMapped()
+	            .build();
+	}
+	
+	//TODO QUINTO STEP
 	
 }

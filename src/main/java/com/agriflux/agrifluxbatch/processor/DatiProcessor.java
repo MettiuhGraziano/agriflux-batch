@@ -35,6 +35,6 @@ public class DatiProcessor {
 	}
 	
 	protected static int generaRandomIntFromRange(int min, int max) {
-		return random.nextInt(min, max + 1);
+		return random.nextInt(min, max);
 	}
 }

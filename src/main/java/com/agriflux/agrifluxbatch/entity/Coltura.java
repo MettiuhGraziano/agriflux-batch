@@ -1,5 +1,6 @@
-package com.agriflux.agrifluxbatch.model;
+package com.agriflux.agrifluxbatch.entity;
 
+import java.math.BigDecimal;
 import java.util.Date;
 
 import jakarta.persistence.Entity;
@@ -15,6 +16,8 @@ public class Coltura {
 	private long idColtura;
 	
 	private String prodottoColtivato;
+	
+	private BigDecimal prezzoKg;
 	
 	private Date dataSemina;
 	
@@ -50,6 +53,14 @@ public class Coltura {
 	
 	public void setDataRaccolto(Date dataRaccolto) {
 		this.dataRaccolto = dataRaccolto;
+	}
+
+	public BigDecimal getPrezzoKg() {
+		return prezzoKg;
+	}
+
+	public void setPrezzoKg(BigDecimal prezzoKg) {
+		this.prezzoKg = prezzoKg;
 	}
 	
 }

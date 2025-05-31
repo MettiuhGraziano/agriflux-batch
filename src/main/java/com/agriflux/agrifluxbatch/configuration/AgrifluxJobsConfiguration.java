@@ -29,11 +29,14 @@ import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
 import com.agriflux.agrifluxbatch.model.DatiMorfologiciMetadata;
 import com.agriflux.agrifluxbatch.model.DatiMorfologiciRecord;
+import com.agriflux.agrifluxbatch.model.DatiProduzioneMetadata;
+import com.agriflux.agrifluxbatch.model.DatiProduzioneRecord;
 import com.agriflux.agrifluxbatch.model.DatiTerrenoMetadata;
 import com.agriflux.agrifluxbatch.model.DatiTerrenoRecord;
-import com.agriflux.agrifluxbatch.processor.ColturaRecordProcessor;
+import com.agriflux.agrifluxbatch.processor.ColturaEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiMorfologiciEnricherProcessor;
+import com.agriflux.agrifluxbatch.processor.DatiProduzioneEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiTerrenoEnricherProcessor;
 
 @Configuration
@@ -57,13 +60,13 @@ public class AgrifluxJobsConfiguration {
 	
 	@Bean
 	Job simulatorJob(JobRepository jobRepository, Step createColturaStep, Step createDatiAmbientaliStep,
-			Step createDatiMorfologiciStep, Step createDatiTerrenoStep) {
+			Step createDatiMorfologiciStep, Step createDatiTerrenoStep, Step createDatiProduzioneStep) {
 		return new JobBuilder("simulatorJob", jobRepository)
 				.start(createColturaStep)
 				.next(createDatiAmbientaliStep)
 				.next(createDatiMorfologiciStep)
 				.next(createDatiTerrenoStep)
-				.preventRestart()
+				.next(createDatiProduzioneStep)
 				.build();
 	}
 	
@@ -71,13 +74,13 @@ public class AgrifluxJobsConfiguration {
 	
 	@Bean
 	Step createColturaStep(JobRepository jobRepository, 
-			JdbcTransactionManager transactionManager,
+			JdbcTransactionManager transactionManager, 
 			ItemReader<ColturaMetadata> colturaMetadataFileReader,
-			ItemWriter<ColturaRecord> colturaDataTableWriter,
-			ItemProcessor<ColturaMetadata, ColturaRecord> colturaRecordProcessor) {
+			ItemProcessor<ColturaMetadata, ColturaRecord> colturaEnricherProcessor,
+			ItemWriter<ColturaRecord> colturaDataTableWriter) {
 		return new StepBuilder("createColturaStep", jobRepository).<ColturaMetadata, ColturaRecord>chunk(10, transactionManager)
 					.reader(colturaMetadataFileReader)
-					.processor(colturaRecordProcessor)
+					.processor(colturaEnricherProcessor)
 					.writer(colturaDataTableWriter)
 					.build();
 	}
@@ -86,23 +89,23 @@ public class AgrifluxJobsConfiguration {
 	FlatFileItemReader<ColturaMetadata> colturaMetadataFileReader() {
 	    return new FlatFileItemReaderBuilder<ColturaMetadata>()
 	            .name("colturaMetadataFileReader")
-	            .resource(new FileSystemResource("src/main/resources/coltura-metadata.txt"))
+	            .resource(new FileSystemResource("src/main/resources/dati-coltura-metadata.txt"))
 	            .delimited()
-	            .names("dataSemina", "dataRaccolto")
+	            .names("prezzoKg", "dataSemina", "dataRaccolto")
 	            .fieldSetMapper(new ColturaMetadataFieldSetMapper())
 	            .build();
 	}
 	
 	@Bean
-	ColturaRecordProcessor colturaRecordProcessor() {
-		return new ColturaRecordProcessor();
+	ColturaEnricherProcessor colturaEnricherProcessor() {
+		return new ColturaEnricherProcessor();
 	}
 	
 	@Bean
 	JdbcBatchItemWriter<ColturaRecord> colturaDataTableWriter(DataSource dataSource) {
 		String sql = """
-				INSERT INTO DATI_COLTURA (PRODOTTO_COLTIVATO, DATA_SEMINA, DATA_RACCOLTO)
-				VALUES (:prodottoColtivato, :dataSemina, :dataRaccolto)
+				INSERT INTO DATI_COLTURA (PRODOTTO_COLTIVATO, PREZZO_KG, DATA_SEMINA, DATA_RACCOLTO)
+				VALUES (:prodottoColtivato, :prezzoKg, :dataSemina, :dataRaccolto)
 				""";
 	    return new JdbcBatchItemWriterBuilder<ColturaRecord>()
 	            .dataSource(dataSource)
@@ -230,7 +233,6 @@ public class AgrifluxJobsConfiguration {
 						"disponibilitaIrrigua", "dataRilevazione", "fkIdColtura", "fkIdMorfologia")
 				.fieldSetMapper(new DatiTerrenoFieldSetMapper())
 				.build();
-		
 	}
 	
 	@Bean
@@ -254,5 +256,55 @@ public class AgrifluxJobsConfiguration {
 	}
 	
 	//TODO QUINTO STEP
+	
+	@Bean
+	Step createDatiProduzioneStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiProduzioneMetadata> datiProduzioneItemReader,
+			ItemProcessor<DatiProduzioneMetadata, DatiProduzioneRecord> datiProduzioneEnricherProcessor,
+			ItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter) {
+		return new StepBuilder("createDatiProduzioneStep", jobRepository).<DatiProduzioneMetadata, DatiProduzioneRecord>chunk(10, transactionManager)
+				.reader(datiProduzioneItemReader)
+				.processor(datiProduzioneEnricherProcessor)
+				.writer(datiProduzioneDataTableWriter)
+				.build();
+	}
+	
+	@Bean
+	@StepScope
+	FlatFileItemReader<DatiProduzioneMetadata> datiProduzioneItemReader(){
+		return new FlatFileItemReaderBuilder<DatiProduzioneMetadata>()
+				.name("datiProduzioneItemReader")
+				.resource(new FileSystemResource("src/main/resources/dati-produzione-metadata.txt"))
+				.delimited()
+				.names("numLavoratori", "speseAccessorie", "tempoSemina", "tempoGerminazione", 
+						"tempoTrapianto", "tempoMaturazione", "tempoRaccolta", "fkIdColtura",
+						"fkIdMorfologia")
+				.fieldSetMapper(new DatiProduzioneFieldSetMapper())
+				.build();
+	}
+	
+	@Bean
+	DatiProduzioneEnricherProcessor datiProduzioneEnricherProcessor() {
+		return new DatiProduzioneEnricherProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_PRODUZIONE (QUANTITA_RACCOLTO, QUANTITA_RACCOLTO_VENDUTO, FATTURATO_COLTURA,
+				 	NUM_LAVORATORI, SPESE_ACCESSORIE, TEMPO_SEMINA, TEMPO_GERMINAZIONE, 
+				 	TEMPO_TRAPIANTO, TEMPO_MATURAZIONE, TEMPO_RACCOLTA, FK_ID_COLTURA,
+				 	FK_ID_MORFOLOGIA)
+				VALUES (:quantitaRaccolto, :quantitaRaccoltoVenduto, :fatturatoColtura, :numLavoratori,
+				 	:speseAccessorie, :tempoSemina, :tempoGerminazione, :tempoTrapianto,
+				 	:tempoMaturazione, :tempoRaccolta, :fkIdColtura, :fkIdMorfologia)
+				""";
+	    return new JdbcBatchItemWriterBuilder<DatiProduzioneRecord>()
+	            .dataSource(dataSource)
+	            .sql(sql)
+	            .beanMapped()
+	            .build();
+	}
 	
 }

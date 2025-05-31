@@ -11,6 +11,7 @@ import com.agriflux.agrifluxbatch.model.ColturaMetadata;
 
 public class ColturaMetadataFieldSetMapper implements FieldSetMapper<ColturaMetadata> {
 
+	private static final String PREZZO_KG = "prezzoKg";
 	private static final String DATA_RACCOLTO = "dataRaccolto";
 	private static final String DATA_SEMINA = "dataSemina";
 	
@@ -19,17 +20,18 @@ public class ColturaMetadataFieldSetMapper implements FieldSetMapper<ColturaMeta
     @Override
     public ColturaMetadata mapFieldSet(FieldSet fieldSet) throws BindException {
     	
-    	ColturaMetadata record = null;
+    	String prezzoKgRange = fieldSet.readString(PREZZO_KG);
+    	
+    	Date semina;
+    	Date raccolto;
+    	
         try {
-            Date semina = dateFormat.parse(fieldSet.readString(DATA_SEMINA));
-            Date raccolto = dateFormat.parse(fieldSet.readString(DATA_RACCOLTO));
-            
-            record = new ColturaMetadata(semina, raccolto);
-            
+            semina = dateFormat.parse(fieldSet.readString(DATA_SEMINA));
+            raccolto = dateFormat.parse(fieldSet.readString(DATA_RACCOLTO));
         } catch (Exception e) {
-            throw new BindException(record, "ColturaRecord");
+            throw new BindException(e, "ColturaRecord");
         }
-        return record;
+		return new ColturaMetadata(prezzoKgRange, semina, raccolto);
     }
 
 }

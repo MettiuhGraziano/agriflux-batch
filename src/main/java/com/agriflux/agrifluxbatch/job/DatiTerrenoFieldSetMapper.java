@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.configuration;
+package com.agriflux.agrifluxbatch.job;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;

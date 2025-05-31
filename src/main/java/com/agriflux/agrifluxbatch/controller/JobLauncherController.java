@@ -15,16 +15,12 @@ public class JobLauncherController {
 	private static final Logger LOGGER = LoggerFactory.getLogger(JobLauncherController.class);
 	
 	private final JobLauncher jobLauncher;
-	
 	private final JobRegistry jobRegistry;
 	
 	public JobLauncherController(JobLauncher jobLauncher, JobRegistry jobRegistry) {
 		this.jobLauncher = jobLauncher;
 		this.jobRegistry = jobRegistry;
 	}
-	
-	//TODO Esporre i servizi rest per il lancio del job da web application
-	
 	
 	//TODO PER GARANTIRE UNICITA' NEI SINGOLI JOB INSERIRE UN ID INCREMENTALE O UN PARAMETRO CHE CAMBIA AD OGNI LANCIO
 	// USANDO UN METODO POST POSSO PASSARE I PARAMETRI DI LANCIO IN MANIERA DINAMICA

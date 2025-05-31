@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.configuration;
+package com.agriflux.agrifluxbatch.job;
 
 import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;

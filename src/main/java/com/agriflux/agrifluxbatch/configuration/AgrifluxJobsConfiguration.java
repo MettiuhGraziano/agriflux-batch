@@ -23,6 +23,9 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 
+import com.agriflux.agrifluxbatch.job.ColturaMetadataFieldSetMapper;
+import com.agriflux.agrifluxbatch.job.DatiProduzioneFieldSetMapper;
+import com.agriflux.agrifluxbatch.job.DatiTerrenoFieldSetMapper;
 import com.agriflux.agrifluxbatch.model.ColturaMetadata;
 import com.agriflux.agrifluxbatch.model.ColturaRecord;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;

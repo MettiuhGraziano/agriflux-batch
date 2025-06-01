@@ -8,7 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.agriflux.agrifluxbatch.entity.ColturaDTO;
 import com.agriflux.agrifluxbatch.service.DatiColturaServiceImpl;
 
-@RestController("api/services")
+@RestController("api/data")
 public class AgrifluxDataController {
 	
 	private final DatiColturaServiceImpl datiColturaServiceImpl;
@@ -18,7 +18,7 @@ public class AgrifluxDataController {
 	}
 	
 	@GetMapping("/colture")
-	public List<ColturaDTO> getAllColtureSortById(){
+	public List<ColturaDTO> findAllColtureSortById(){
 		return datiColturaServiceImpl.findAllColturaSortById();
 	}
 }

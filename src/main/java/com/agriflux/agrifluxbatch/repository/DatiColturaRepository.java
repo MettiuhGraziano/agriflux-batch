@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.agriflux.agrifluxbatch.entity.Coltura;
 
 @Repository
-public interface ColturaRepository extends CrudRepository<Coltura, Long>, PagingAndSortingRepository<Coltura, Long>{
+public interface DatiColturaRepository extends CrudRepository<Coltura, Long>, PagingAndSortingRepository<Coltura, Long> {
 
 }

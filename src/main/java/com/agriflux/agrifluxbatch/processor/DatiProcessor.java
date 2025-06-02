@@ -12,14 +12,14 @@ import org.springframework.stereotype.Component;
 
 import com.agriflux.agrifluxbatch.entity.Coltura;
 import com.agriflux.agrifluxbatch.entity.Morfologia;
-import com.agriflux.agrifluxbatch.repository.ColturaRepository;
+import com.agriflux.agrifluxbatch.repository.DatiColturaRepository;
 import com.agriflux.agrifluxbatch.repository.DatiMorfologiciRepository;
 
 @Component
 public class DatiProcessor {
 	
 	@Autowired
-	private ColturaRepository colturaRepository;
+	private DatiColturaRepository colturaRepository;
 	
 	@Autowired
 	private DatiMorfologiciRepository datiMorfologiciRepository;

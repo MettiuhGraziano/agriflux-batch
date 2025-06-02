@@ -15,11 +15,11 @@
 	<name>AgriFlux Batch Processors</name>
 	<description>Progetto contenente i processi batch per l' alimentazione e la 
 		manipolazione dati AgriFlux</description>
-	<url />
 	
 	<properties>
 		<java.version>21</java.version>
 	</properties>
+	
 	<dependencies>
 		<dependency>
 			<groupId>org.springframework.boot</groupId>
@@ -60,6 +60,12 @@
 			<groupId>org.modelmapper</groupId>
 			<artifactId>modelmapper</artifactId>
 			<version>3.2.0</version>
+		</dependency>
+		
+		<dependency>
+			<groupId>com.agriflux</groupId>
+			<artifactId>agriflux-shared</artifactId>
+			<version>0.0.1-SNAPSHOT</version>
 		</dependency>
 
 	</dependencies>

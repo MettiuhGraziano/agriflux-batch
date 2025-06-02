@@ -5,20 +5,21 @@ import java.util.List;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import com.agriflux.agrifluxbatch.entity.ColturaDTO;
-import com.agriflux.agrifluxbatch.service.DatiColturaServiceImpl;
+import com.agriflux.agrifluxbatch.service.AgrifluxDataServiceImpl;
+import com.agriflux.agrifluxshared.dto.ColturaDTO;
+import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
 @RestController("api/data")
-public class AgrifluxDataController {
+public class AgrifluxDataController implements AgrifluxDataService{
 	
-	private final DatiColturaServiceImpl datiColturaServiceImpl;
+	private final AgrifluxDataServiceImpl agrifluxDataServiceImpl;
 	
-	public AgrifluxDataController(DatiColturaServiceImpl datiColturaServiceImpl) {
-		this.datiColturaServiceImpl = datiColturaServiceImpl;
+	public AgrifluxDataController(AgrifluxDataServiceImpl agrifluxDataServiceImpl) {
+		this.agrifluxDataServiceImpl = agrifluxDataServiceImpl;
 	}
 	
 	@GetMapping("/colture")
-	public List<ColturaDTO> findAllColtureSortById(){
-		return datiColturaServiceImpl.findAllColturaSortById();
+	public List<ColturaDTO> findAllColturaSortById(){
+		return agrifluxDataServiceImpl.findAllColturaSortById();
 	}
 }

@@ -8,18 +8,19 @@ import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Service;
 
 import com.agriflux.agrifluxbatch.entity.Coltura;
-import com.agriflux.agrifluxbatch.entity.ColturaDTO;
 import com.agriflux.agrifluxbatch.repository.ColturaRepository;
+import com.agriflux.agrifluxshared.dto.ColturaDTO;
+import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
 @Service
-public class DatiColturaServiceImpl implements DatiColturaService{
+public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 	
 	private static final String ID_COLTURA = "idColtura";
 	
 	private final ColturaRepository colturaRepository;
 	private final ModelMapper mapper;
 	
-	DatiColturaServiceImpl(ColturaRepository colturaRepository, ModelMapper mapper) {
+	AgrifluxDataServiceImpl(ColturaRepository colturaRepository, ModelMapper mapper) {
 		this.colturaRepository = colturaRepository;
 		this.mapper = mapper;
 	}
@@ -38,4 +39,5 @@ public class DatiColturaServiceImpl implements DatiColturaService{
 		
 		return colturaList;
 	}
+
 }

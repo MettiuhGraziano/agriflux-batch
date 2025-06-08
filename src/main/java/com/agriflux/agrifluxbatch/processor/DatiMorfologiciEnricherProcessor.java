@@ -4,10 +4,10 @@ import java.math.BigDecimal;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import com.agriflux.agrifluxbatch.enumeratori.EsposizioneEnum;
-import com.agriflux.agrifluxbatch.enumeratori.LitologiaTerrenoEnum;
 import com.agriflux.agrifluxbatch.model.DatiMorfologiciMetadata;
 import com.agriflux.agrifluxbatch.model.DatiMorfologiciRecord;
+import com.agriflux.agrifluxshared.enumeratori.EsposizioneEnum;
+import com.agriflux.agrifluxshared.enumeratori.LitologiaTerrenoEnum;
 
 public class DatiMorfologiciEnricherProcessor extends DatiProcessor implements ItemProcessor<DatiMorfologiciMetadata, DatiMorfologiciRecord>{
 	

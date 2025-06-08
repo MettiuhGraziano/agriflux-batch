@@ -19,6 +19,7 @@ import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
 import com.agriflux.agrifluxbatch.repository.DatiTerrenoRepository;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
+import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
 import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
@@ -126,6 +127,11 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 		}
 		
 		return produzioneList;
+	}
+
+	@Override
+	public List<ColturaGroupByProdottoDTO> countColtureGroupByProdotto() {
+		return datiColturaRepository.countColtureGroupByProdotto();
 	}
 
 }

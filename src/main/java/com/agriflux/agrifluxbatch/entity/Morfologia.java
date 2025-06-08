@@ -6,8 +6,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Entity(name = "DATI_MORFOLOGICI")
+@Entity
+@Table(name = "DATI_MORFOLOGICI")
 public class Morfologia {
 	
 	@Id

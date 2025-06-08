@@ -7,8 +7,10 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.Table;
 
-@Entity(name = "DATI_COLTURA")
+@Entity
+@Table(name = "DATI_COLTURA")
 public class Coltura {
 	
 	@Id

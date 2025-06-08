@@ -9,9 +9,9 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.agriflux.agrifluxbatch.entity.Coltura;
 import com.agriflux.agrifluxbatch.entity.Morfologia;
-import com.agriflux.agrifluxbatch.enumeratori.TipoProdottoEnum;
 import com.agriflux.agrifluxbatch.model.DatiProduzioneMetadata;
 import com.agriflux.agrifluxbatch.model.DatiProduzioneRecord;
+import com.agriflux.agrifluxshared.enumeratori.TipoProdottoEnum;
 
 public class DatiProduzioneEnricherProcessor extends DatiProcessor implements ItemProcessor<DatiProduzioneMetadata, DatiProduzioneRecord>{
 	

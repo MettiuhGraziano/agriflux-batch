@@ -8,6 +8,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.agriflux.agrifluxbatch.service.AgrifluxDataServiceImpl;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
+import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
 import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
@@ -50,5 +51,11 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/datiProduzione")
 	public List<ProduzioneDTO> findAllProduzioneSortById() {
 		return agrifluxDataServiceImpl.findAllProduzioneSortById();
+	}
+
+	@Override
+	@GetMapping("/numeroColtureRaggruppateByProdotto")
+	public List<ColturaGroupByProdottoDTO> countColtureGroupByProdotto() {
+		return agrifluxDataServiceImpl.countColtureGroupByProdotto();
 	}
 }

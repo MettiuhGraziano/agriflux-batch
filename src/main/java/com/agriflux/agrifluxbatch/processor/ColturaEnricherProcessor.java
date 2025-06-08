@@ -1,6 +1,8 @@
 package com.agriflux.agrifluxbatch.processor;
 
 import java.math.BigDecimal;
+import java.util.HashMap;
+import java.util.Map;
 
 import org.springframework.batch.item.ItemProcessor;
 
@@ -10,7 +12,7 @@ import com.agriflux.agrifluxbatch.model.ColturaRecord;
 
 public class ColturaEnricherProcessor extends DatiProcessor implements ItemProcessor<ColturaMetadata, ColturaRecord>{
 	
-	//private final Map<String, BigDecimal> cacheColtura = new HashMap<String, BigDecimal>();
+	private final Map<String, BigDecimal> cachePrezziColture = new HashMap<String, BigDecimal>();
 	
 	@Override
 	public ColturaRecord process(ColturaMetadata item) throws Exception {
@@ -24,17 +26,17 @@ public class ColturaEnricherProcessor extends DatiProcessor implements ItemProce
 			}
 		}
 		
-		BigDecimal prezzoKg = generaRandomBigDecimalFromRange(item.prezzoKg());
+		BigDecimal prezzoKg = null;
 		
+		if (null != cachePrezziColture) {
+			if (null != cachePrezziColture.get(prodotto)) {
+				prezzoKg = applicaVariazioneDistribuzione(cachePrezziColture.get(prodotto));
+			} else {
+				prezzoKg = generaRandomBigDecimalFromRange(item.prezzoKg());
+			}
+		}
 		
-		//TODO APPLICARE INDICE DI INFLAZIONE SULLE COLTURE CON STESSO CODICE PRODOTTO
-		
-//		if (null != cacheColtura.get(prodotto)) {
-//			prezzoKg = cacheColtura.get(prodotto);
-//		} else {
-//			prezzoKg = generaRandomBigDecimalFromRange(item.prezzoKg());
-//			cacheColtura.put(prodotto, prezzoKg);
-//		}
+		cachePrezziColture.put(prodotto, prezzoKg);
 		
 		return new ColturaRecord(prodotto, prezzoKg, item.dataSemina(), item.dataRaccolto());
 	}

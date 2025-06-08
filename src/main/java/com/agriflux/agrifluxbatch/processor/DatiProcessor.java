@@ -27,6 +27,7 @@ public class DatiProcessor {
 	private static final String ID_COLTURA = "idColtura";
 	private static final String ID_MORFOLOGIA = "idMorfologia";
 	private static final String DELIMITER = "|";
+	
 	private static Random random = new Random();
 	
 	private static final Map<Long, Coltura> cacheColtura = new HashMap<Long, Coltura>();
@@ -92,5 +93,15 @@ public class DatiProcessor {
 	
 	protected static int generaRandomIntFromRange(int min, int max) {
 		return random.nextInt(min, max);
+	}
+	
+	protected BigDecimal applicaVariazioneDistribuzione(BigDecimal valoreIniziale) {
+		
+		BigDecimal limiteVariazioneSuperiore = valoreIniziale.divide(new BigDecimal(4));
+		BigDecimal limiteVariazioneinferiore = limiteVariazioneSuperiore.negate();
+		
+		double variazione = random.nextDouble(limiteVariazioneinferiore.doubleValue(), limiteVariazioneSuperiore.doubleValue());
+		
+		return valoreIniziale.add(new BigDecimal(variazione));
 	}
 }

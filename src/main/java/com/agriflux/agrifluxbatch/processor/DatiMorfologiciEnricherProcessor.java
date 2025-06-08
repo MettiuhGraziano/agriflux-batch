@@ -17,7 +17,7 @@ public class DatiMorfologiciEnricherProcessor extends DatiProcessor implements I
 		String estensioneTerrenoRange = item.estensioneTerreno();
 		BigDecimal estensioneTerreno = generaRandomBigDecimalFromRange(estensioneTerrenoRange);
 		
-		BigDecimal pendenza = generaRandomBigDecimalFromRange(1.0, 70.0);
+		BigDecimal pendenza = generaRandomBigDecimalFromRange(item.pendenza());
 		
 		String esposizione = item.esposizione();
 		for (EsposizioneEnum esp : EsposizioneEnum.values()) {

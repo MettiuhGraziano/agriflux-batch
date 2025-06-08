@@ -187,7 +187,7 @@ public class AgrifluxJobsConfiguration {
 				.name("datiMorfologiciItemReader")
 				.resource(new FileSystemResource("src/main/resources/dati-morfologici-metadata.txt"))
 				.delimited()
-				.names("estensioneTerreno", "esposizione", "litologia")
+				.names("estensioneTerreno", "pendenza", "esposizione", "litologia")
 				.targetType(DatiMorfologiciMetadata.class)
 				.build();
 	}

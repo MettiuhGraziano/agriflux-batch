@@ -16,7 +16,7 @@ public class Morfologia {
 	
 	private BigDecimal estensioneTerreno;
 	
-	private int pendenza;
+	private BigDecimal pendenza;
 	
 	private String esposizione;
 	
@@ -38,11 +38,11 @@ public class Morfologia {
 		this.estensioneTerreno = estensioneTerreno;
 	}
 
-	public int getPendenza() {
+	public BigDecimal getPendenza() {
 		return pendenza;
 	}
 
-	public void setPendenza(int pendenza) {
+	public void setPendenza(BigDecimal pendenza) {
 		this.pendenza = pendenza;
 	}
 

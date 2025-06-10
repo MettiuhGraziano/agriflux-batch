@@ -54,7 +54,7 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	}
 
 	@Override
-	@GetMapping("/numeroColtureRaggruppateByProdotto")
+	@GetMapping("/listColtureGroupByProdotto")
 	public List<ColturaGroupByProdottoDTO> countColtureGroupByProdotto() {
 		return agrifluxDataServiceImpl.countColtureGroupByProdotto();
 	}

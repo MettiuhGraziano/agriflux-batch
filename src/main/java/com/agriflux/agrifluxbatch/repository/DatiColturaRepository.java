@@ -8,7 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.agriflux.agrifluxbatch.entity.Coltura;
-import com.agriflux.agrifluxbatch.repository.query.ColturaProdottoPrezzoDataProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ColturaProdottoPrezzoDataProjection;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
 
 @Repository

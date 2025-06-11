@@ -21,7 +21,7 @@ import com.agriflux.agrifluxbatch.repository.DatiColturaRepository;
 import com.agriflux.agrifluxbatch.repository.DatiMorfologiciRepository;
 import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
 import com.agriflux.agrifluxbatch.repository.DatiTerrenoRepository;
-import com.agriflux.agrifluxbatch.repository.query.ColturaProdottoPrezzoDataProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ColturaProdottoPrezzoDataProjection;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;

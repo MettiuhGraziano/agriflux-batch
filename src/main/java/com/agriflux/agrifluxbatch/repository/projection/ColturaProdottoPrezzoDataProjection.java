@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.repository.query;
+package com.agriflux.agrifluxbatch.repository.projection;
 
 import java.io.Serializable;
 import java.math.BigDecimal;

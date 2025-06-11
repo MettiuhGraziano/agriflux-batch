@@ -1,7 +1,11 @@
 package com.agriflux.agrifluxbatch.service;
 
+import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -17,9 +21,11 @@ import com.agriflux.agrifluxbatch.repository.DatiColturaRepository;
 import com.agriflux.agrifluxbatch.repository.DatiMorfologiciRepository;
 import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
 import com.agriflux.agrifluxbatch.repository.DatiTerrenoRepository;
+import com.agriflux.agrifluxbatch.repository.query.ColturaProdottoPrezzoDataProjection;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
+import com.agriflux.agrifluxshared.dto.ColturaListPrezzoDataRaccoltoDTO;
 import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
@@ -132,6 +138,37 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 	@Override
 	public List<ColturaGroupByProdottoDTO> countColtureGroupByProdotto() {
 		return datiColturaRepository.countColtureGroupByProdotto();
+	}
+
+	@Override
+	public Map<String, ColturaListPrezzoDataRaccoltoDTO> findPrezziAndDateColtura() {
+		
+		Map<String, ColturaListPrezzoDataRaccoltoDTO> colturaPrezzoDataMap = new HashMap<String, ColturaListPrezzoDataRaccoltoDTO>();
+		
+		List<ColturaProdottoPrezzoDataProjection> prezziAndDateColtura = datiColturaRepository.findPrezziAndDateColtura();
+		
+		for (ColturaProdottoPrezzoDataProjection projection : prezziAndDateColtura) {
+			
+			if (!colturaPrezzoDataMap.isEmpty()
+					&& null != colturaPrezzoDataMap.get(projection.getProdottoColtivato())) {
+				
+				colturaPrezzoDataMap.get(projection.getProdottoColtivato()).getPrezzoKgList()
+						.add(projection.getPrezzoKg());
+				colturaPrezzoDataMap.get(projection.getProdottoColtivato()).getDataRaccoltoList()
+						.add(projection.getDataRaccolto());
+			} else {
+				
+				ColturaListPrezzoDataRaccoltoDTO dto = new ColturaListPrezzoDataRaccoltoDTO(new ArrayList<BigDecimal>(), new ArrayList<Date>());
+				
+				dto.getPrezzoKgList().add(projection.getPrezzoKg());
+				dto.getDataRaccoltoList().add(projection.getDataRaccolto());
+				
+				colturaPrezzoDataMap.put(projection.getProdottoColtivato(), dto);
+			}
+			
+		}
+		
+		return colturaPrezzoDataMap;
 	}
 
 }

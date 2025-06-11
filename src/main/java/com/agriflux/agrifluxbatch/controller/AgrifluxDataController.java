@@ -1,6 +1,7 @@
 package com.agriflux.agrifluxbatch.controller;
 
 import java.util.List;
+import java.util.Map;
 
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -9,6 +10,7 @@ import com.agriflux.agrifluxbatch.service.AgrifluxDataServiceImpl;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
+import com.agriflux.agrifluxshared.dto.ColturaListPrezzoDataRaccoltoDTO;
 import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
@@ -57,5 +59,11 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/listColtureGroupByProdotto")
 	public List<ColturaGroupByProdottoDTO> countColtureGroupByProdotto() {
 		return agrifluxDataServiceImpl.countColtureGroupByProdotto();
+	}
+
+	@Override
+	@GetMapping("/findPrezziAndDateRaccoltoColtura")
+	public Map<String, ColturaListPrezzoDataRaccoltoDTO> findPrezziAndDateColtura() {
+		return agrifluxDataServiceImpl.findPrezziAndDateColtura();
 	}
 }

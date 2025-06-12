@@ -46,17 +46,17 @@ public class DatiProduzioneEnricherProcessor extends DatiProcessor implements It
 		
 		BigDecimal speseAccessorie = generaRandomBigDecimalFromRange(item.speseAccessorie());
 		
-		long fkIdColtura = item.fkIdColtura();
-		long fkIdMorfologia = item.fkIdMorfologia();
+		long idColtura = item.idColtura();
+		long idMorfologia = item.idMorfologia();
 		
-		BigDecimal quantitaRaccolto = calcolaQuantitaRaccolto(fkIdColtura, fkIdMorfologia);
+		BigDecimal quantitaRaccolto = calcolaQuantitaRaccolto(idColtura, idMorfologia);
 		BigDecimal quantitaRaccoltoVenduto = calcoloQuantitaRaccoltoVenduto(quantitaRaccolto);
 		
-		BigDecimal fatturatoColtura = calcoloFatturatoColtura(quantitaRaccoltoVenduto, fkIdColtura);
+		BigDecimal fatturatoColtura = calcoloFatturatoColtura(quantitaRaccoltoVenduto, idColtura);
 		
 		return new DatiProduzioneRecord(quantitaRaccolto, quantitaRaccoltoVenduto, fatturatoColtura,
 				numLavoratori, speseAccessorie, tempoSemina, tempoGerminazione, tempoTrapianto, 
-				tempoMaturazione, tempoRaccolta, fkIdColtura, fkIdMorfologia);
+				tempoMaturazione, tempoRaccolta, idColtura, idMorfologia);
 	}
 
 	private BigDecimal calcoloFatturatoColtura(BigDecimal quantitaRaccoltoVenduto, long fkIdColtura) {

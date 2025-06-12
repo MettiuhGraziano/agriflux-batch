@@ -140,7 +140,7 @@ public class AgrifluxJobsConfiguration {
 				.resource(new FileSystemResource("src/main/resources/dati-ambientali-metadata.txt"))
 				.delimited()
 				.names("temperaturaMedia", "umiditaMedia", "precipitazioni", "irraggiamentoMedio",
-						"ombreggiamentoMedio", "dataRilevazione", "fkIdColtura")
+						"ombreggiamentoMedio", "dataRilevazione", "idColtura")
 				.targetType(DatiAmbientaliMetadata.class)
 				.build();
 	}
@@ -154,9 +154,9 @@ public class AgrifluxJobsConfiguration {
 	JdbcBatchItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter(DataSource dataSource) {
 		String sql = """
 				INSERT INTO DATI_AMBIENTALI (TEMPERATURA_MEDIA, UMIDITA_MEDIA, PRECIPITAZIONI, 
-						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, DATA_RILEVAZIONE, FK_ID_COLTURA)
+						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, DATA_RILEVAZIONE, ID_COLTURA)
 				VALUES (:temperaturaMedia, :umiditaMedia, :precipitazioni, :irraggiamentoMedio, 
-						:ombreggiamentoMedio, :dataRilevazione, :fkIdColtura)
+						:ombreggiamentoMedio, :dataRilevazione, :idColtura)
 				""";
 	    return new JdbcBatchItemWriterBuilder<DatiAmbientaliRecord>()
 	            .dataSource(dataSource)
@@ -233,7 +233,7 @@ public class AgrifluxJobsConfiguration {
 				.resource(new FileSystemResource("src/main/resources/dati-terreno-metadata.txt"))
 				.delimited()
 				.names("phSuolo", "umidita", "capacitaAssorbente", "porosita", "temperatura", 
-						"disponibilitaIrrigua", "dataRilevazione", "fkIdColtura", "fkIdMorfologia")
+						"disponibilitaIrrigua", "dataRilevazione", "idColtura", "idMorfologia")
 				.fieldSetMapper(new DatiTerrenoFieldSetMapper())
 				.build();
 	}
@@ -247,9 +247,9 @@ public class AgrifluxJobsConfiguration {
 	JdbcBatchItemWriter<DatiTerrenoRecord> datiTerrenoDataTableWriter(DataSource dataSource) {
 		String sql = """
 				INSERT INTO DATI_TERRENO (PH_SUOLO, UMIDITA, CAPACITA_ASSORBENTE, POROSITA, TEMPERATURA, 
-					DISPONIBILITA_IRRIGUA, DATA_RILEVAZIONE, FK_ID_COLTURA, FK_ID_MORFOLOGIA)
+					DISPONIBILITA_IRRIGUA, DATA_RILEVAZIONE, ID_COLTURA, ID_MORFOLOGIA)
 				VALUES (:phSuolo, :umidita, :capacitaAssorbente, :porosita, :temperatura, :disponibilitaIrrigua,
-					:dataRilevazione, :fkIdColtura, :fkIdMorfologia)
+					:dataRilevazione, :idColtura, :idMorfologia)
 				""";
 	    return new JdbcBatchItemWriterBuilder<DatiTerrenoRecord>()
 	            .dataSource(dataSource)
@@ -281,8 +281,8 @@ public class AgrifluxJobsConfiguration {
 				.resource(new FileSystemResource("src/main/resources/dati-produzione-metadata.txt"))
 				.delimited()
 				.names("numLavoratori", "speseAccessorie", "tempoSemina", "tempoGerminazione", 
-						"tempoTrapianto", "tempoMaturazione", "tempoRaccolta", "fkIdColtura",
-						"fkIdMorfologia")
+						"tempoTrapianto", "tempoMaturazione", "tempoRaccolta", "idColtura",
+						"idMorfologia")
 				.fieldSetMapper(new DatiProduzioneFieldSetMapper())
 				.build();
 	}
@@ -297,11 +297,11 @@ public class AgrifluxJobsConfiguration {
 		String sql = """
 				INSERT INTO DATI_PRODUZIONE (QUANTITA_RACCOLTO, QUANTITA_RACCOLTO_VENDUTO, FATTURATO_COLTURA,
 				 	NUM_LAVORATORI, SPESE_ACCESSORIE, TEMPO_SEMINA, TEMPO_GERMINAZIONE, 
-				 	TEMPO_TRAPIANTO, TEMPO_MATURAZIONE, TEMPO_RACCOLTA, FK_ID_COLTURA,
-				 	FK_ID_MORFOLOGIA)
+				 	TEMPO_TRAPIANTO, TEMPO_MATURAZIONE, TEMPO_RACCOLTA, ID_COLTURA,
+				 	ID_MORFOLOGIA)
 				VALUES (:quantitaRaccolto, :quantitaRaccoltoVenduto, :fatturatoColtura, :numLavoratori,
 				 	:speseAccessorie, :tempoSemina, :tempoGerminazione, :tempoTrapianto,
-				 	:tempoMaturazione, :tempoRaccolta, :fkIdColtura, :fkIdMorfologia)
+				 	:tempoMaturazione, :tempoRaccolta, :idColtura, :idMorfologia)
 				""";
 	    return new JdbcBatchItemWriterBuilder<DatiProduzioneRecord>()
 	            .dataSource(dataSource)

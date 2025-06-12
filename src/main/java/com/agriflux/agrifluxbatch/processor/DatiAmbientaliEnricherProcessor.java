@@ -44,11 +44,10 @@ public class DatiAmbientaliEnricherProcessor extends DatiProcessor implements It
 		
 		Date dataRilevazione = dateFormat.parse(datiAmbientaliMetadata.dataRilevazione());
 		
-		long fkIdColtura = Long.parseLong(datiAmbientaliMetadata.fkIdColtura());
+		long idColtura = Long.parseLong(datiAmbientaliMetadata.idColtura());
 		
 		return new DatiAmbientaliRecord(temperaturaRandom, umiditaRandom, precipitazioniRandom, irraggiamentoRandom,
-				ombreggiamentoRandom, dataRilevazione,
-				fkIdColtura);
+				ombreggiamentoRandom, dataRilevazione, idColtura);
 	}
 
 }

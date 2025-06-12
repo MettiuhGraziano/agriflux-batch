@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -27,8 +29,14 @@ public class Produzione {
 	private int tempoTrapianto;
 	private int tempoMaturazione;
 	private int tempoRaccolta; 
-	private long fkIdColtura;
-	private long fkIdMorfologia;
+	
+	@OneToOne
+    @JoinColumn(name = "ID_COLTURA")
+    private Coltura coltura;
+	
+	@OneToOne
+    @JoinColumn(name = "ID_MORFOLOGIA")
+	private Morfologia morfologia;
 	
 	public long getIdProduzione() {
 		return idProduzione;
@@ -118,20 +126,20 @@ public class Produzione {
 		this.tempoRaccolta = tempoRaccolta;
 	}
 	
-	public long getFkIdColtura() {
-		return fkIdColtura;
+	public Coltura getColtura() {
+		return coltura;
+	}
+
+	public void setColtura(Coltura coltura) {
+		this.coltura = coltura;
 	}
 	
-	public void setFkIdColtura(long fkIdColtura) {
-		this.fkIdColtura = fkIdColtura;
+	public Morfologia getMorfologia() {
+		return morfologia;
 	}
-	
-	public long getFkIdMorfologia() {
-		return fkIdMorfologia;
-	}
-	
-	public void setFkIdMorfologia(long fkIdMorfologia) {
-		this.fkIdMorfologia = fkIdMorfologia;
+
+	public void setMorfologia(Morfologia morfologia) {
+		this.morfologia = morfologia;
 	}
 	
 }

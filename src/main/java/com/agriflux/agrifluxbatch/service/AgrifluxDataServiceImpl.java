@@ -2,6 +2,7 @@ package com.agriflux.agrifluxbatch.service;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -22,11 +23,13 @@ import com.agriflux.agrifluxbatch.repository.DatiMorfologiciRepository;
 import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
 import com.agriflux.agrifluxbatch.repository.DatiTerrenoRepository;
 import com.agriflux.agrifluxbatch.repository.projection.ColturaProdottoPrezzoDataProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaProjection;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
 import com.agriflux.agrifluxshared.dto.ColturaListPrezzoDataRaccoltoDTO;
 import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
+import com.agriflux.agrifluxshared.dto.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
@@ -169,6 +172,54 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 		}
 		
 		return colturaPrezzoDataMap;
+	}
+
+	@Override
+	public Map<String, Map<String, ProduzioneColturaDTO>> findColtureJoinProduzione() {
+		
+		Map<String, Map<String, ProduzioneColturaDTO>> response = new HashMap<String, Map<String, ProduzioneColturaDTO>>();
+		
+		List<ProduzioneJoinColturaProjection> produzioneWithColturaProjection = datiProduzioneRepository.findProduzioneWithColturaProjection();
+		
+		Calendar calendar = Calendar.getInstance();
+		ProduzioneColturaDTO dto = null;
+		
+		for (ProduzioneJoinColturaProjection projection : produzioneWithColturaProjection) {
+			
+			calendar.setTime(projection.getDataRaccolto());
+			String annoRiferimento = String.valueOf(calendar.getTime().getYear());
+			
+			if (!response.isEmpty() && null != response.get(projection.getProdottoColtivato())) {
+				
+				if (null != response.get(projection.getProdottoColtivato()).get(annoRiferimento)) {
+					
+					BigDecimal quantitaRaccoltoTotale = response.get(projection.getProdottoColtivato())
+							.get(annoRiferimento).getQuantitaRaccolto().add(projection.getQuantitaRaccolto());
+					
+					BigDecimal quantitaRaccoltoTotaleVenduto = response.get(projection.getProdottoColtivato())
+							.get(annoRiferimento).getQuantitaRaccoltoVenduto().add(projection.getQuantitaRaccoltoVenduto());
+					
+					BigDecimal fatturatoTotale = response.get(projection.getProdottoColtivato()).get(annoRiferimento)
+							.getFatturatoColtura().add(projection.getFatturatoColtura());
+
+					response.get(projection.getProdottoColtivato()).get(annoRiferimento).setQuantitaRaccolto(quantitaRaccoltoTotale);
+					response.get(projection.getProdottoColtivato()).get(annoRiferimento).setQuantitaRaccoltoVenduto(quantitaRaccoltoTotaleVenduto);
+					response.get(projection.getProdottoColtivato()).get(annoRiferimento).setFatturatoColtura(fatturatoTotale);
+					
+				} else {
+					dto = new ProduzioneColturaDTO(projection.getQuantitaRaccolto(), projection.getQuantitaRaccoltoVenduto(), projection.getFatturatoColtura());
+					response.get(projection.getProdottoColtivato()).put(annoRiferimento, dto);
+				}
+			} else {
+				dto = new ProduzioneColturaDTO(projection.getQuantitaRaccolto(), projection.getQuantitaRaccoltoVenduto(), projection.getFatturatoColtura());
+				Map<String, ProduzioneColturaDTO> mappaAnno = new HashMap<String, ProduzioneColturaDTO>();
+				mappaAnno.put(annoRiferimento, dto);
+				response.put(projection.getProdottoColtivato(), mappaAnno);
+			}
+			
+		}
+		
+		return response;
 	}
 
 }

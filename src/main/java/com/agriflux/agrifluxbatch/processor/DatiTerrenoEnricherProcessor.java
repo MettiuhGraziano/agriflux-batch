@@ -23,48 +23,48 @@ public class DatiTerrenoEnricherProcessor extends DatiProcessor implements ItemP
 	public DatiTerrenoRecord process(DatiTerrenoMetadata item) throws Exception {
 		
 		BigDecimal phSuolo = null;
-		if (null != cacheVariazioneRilevazioniTerreno.get(PH_SUOLO.concat(String.valueOf(item.fkIdColtura())))) {
-			phSuolo = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(PH_SUOLO.concat(String.valueOf(item.fkIdColtura()))));
+		if (null != cacheVariazioneRilevazioniTerreno.get(PH_SUOLO.concat(String.valueOf(item.idColtura())))) {
+			phSuolo = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(PH_SUOLO.concat(String.valueOf(item.idColtura()))));
 		} else {
 			phSuolo = generaRandomBigDecimalFromRange(item.phSuolo());
 		}
-		cacheVariazioneRilevazioniTerreno.put(PH_SUOLO.concat(String.valueOf(item.fkIdColtura())), phSuolo);
+		cacheVariazioneRilevazioniTerreno.put(PH_SUOLO.concat(String.valueOf(item.idColtura())), phSuolo);
 		
 		BigDecimal umidita = null;
-		if (null != cacheVariazioneRilevazioniTerreno.get(UMIDITA.concat(String.valueOf(item.fkIdColtura())))) {
-			umidita = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(UMIDITA.concat(String.valueOf(item.fkIdColtura()))));
+		if (null != cacheVariazioneRilevazioniTerreno.get(UMIDITA.concat(String.valueOf(item.idColtura())))) {
+			umidita = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(UMIDITA.concat(String.valueOf(item.idColtura()))));
 		} else {
 			umidita = generaRandomBigDecimalFromRange(item.umidita());
 		}
-		cacheVariazioneRilevazioniTerreno.put(UMIDITA.concat(String.valueOf(item.fkIdColtura())), umidita);
+		cacheVariazioneRilevazioniTerreno.put(UMIDITA.concat(String.valueOf(item.idColtura())), umidita);
 		
 		BigDecimal capacitaAssorbente = null;
-		if (null != cacheVariazioneRilevazioniTerreno.get(CAP_ASSORBENTE.concat(String.valueOf(item.fkIdColtura())))) {
-			capacitaAssorbente = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(CAP_ASSORBENTE.concat(String.valueOf(item.fkIdColtura()))));
+		if (null != cacheVariazioneRilevazioniTerreno.get(CAP_ASSORBENTE.concat(String.valueOf(item.idColtura())))) {
+			capacitaAssorbente = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(CAP_ASSORBENTE.concat(String.valueOf(item.idColtura()))));
 		} else {
 			capacitaAssorbente = generaRandomBigDecimalFromRange(item.capacitaAssorbente());
 		}
-		cacheVariazioneRilevazioniTerreno.put(CAP_ASSORBENTE.concat(String.valueOf(item.fkIdColtura())), capacitaAssorbente);
+		cacheVariazioneRilevazioniTerreno.put(CAP_ASSORBENTE.concat(String.valueOf(item.idColtura())), capacitaAssorbente);
 
 		BigDecimal porosita = null;
-		if (null != cacheVariazioneRilevazioniTerreno.get(POROSITA.concat(String.valueOf(item.fkIdColtura())))) {
-			porosita = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(POROSITA.concat(String.valueOf(item.fkIdColtura()))));
+		if (null != cacheVariazioneRilevazioniTerreno.get(POROSITA.concat(String.valueOf(item.idColtura())))) {
+			porosita = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(POROSITA.concat(String.valueOf(item.idColtura()))));
 		} else {
 			porosita = generaRandomBigDecimalFromRange(item.porosita());
 		}
-		cacheVariazioneRilevazioniTerreno.put(POROSITA.concat(String.valueOf(item.fkIdColtura())), porosita);
+		cacheVariazioneRilevazioniTerreno.put(POROSITA.concat(String.valueOf(item.idColtura())), porosita);
 		
 		BigDecimal temperatura = null;
-		if (null != cacheVariazioneRilevazioniTerreno.get(TEMPERATURA.concat(String.valueOf(item.fkIdColtura())))) {
-			temperatura = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(TEMPERATURA.concat(String.valueOf(item.fkIdColtura()))));
+		if (null != cacheVariazioneRilevazioniTerreno.get(TEMPERATURA.concat(String.valueOf(item.idColtura())))) {
+			temperatura = applicaVariazioneDistribuzione(cacheVariazioneRilevazioniTerreno.get(TEMPERATURA.concat(String.valueOf(item.idColtura()))));
 		} else {
 			temperatura = generaRandomBigDecimalFromRange(item.temperatura());
 		}
-		cacheVariazioneRilevazioniTerreno.put(TEMPERATURA.concat(String.valueOf(item.fkIdColtura())), temperatura);
+		cacheVariazioneRilevazioniTerreno.put(TEMPERATURA.concat(String.valueOf(item.idColtura())), temperatura);
 		
 		return new DatiTerrenoRecord(phSuolo, umidita, capacitaAssorbente, porosita,
 				temperatura, item.disponibilitaIrrigua(), item.dataRilevazione(),
-				item.fkIdColtura(), item.fkIdMorfologia());
+				item.idColtura(), item.idMorfologia());
 	}
 
 }

@@ -12,8 +12,8 @@ import com.agriflux.agrifluxbatch.model.DatiTerrenoMetadata;
 
 public class DatiTerrenoFieldSetMapper implements FieldSetMapper<DatiTerrenoMetadata>{
 
-	private static final String FK_ID_MORFOLOGIA = "fkIdMorfologia";
-	private static final String FK_ID_COLTURA = "fkIdColtura";
+	private static final String ID_MORFOLOGIA = "idMorfologia";
+	private static final String ID_COLTURA = "idColtura";
 	private static final String DATA_RILEVAZIONE = "dataRilevazione";
 	private static final String DISPONIBILITA_IRRIGUA = "disponibilitaIrrigua";
 	private static final String TEMPERATURA = "temperatura";
@@ -42,11 +42,11 @@ public class DatiTerrenoFieldSetMapper implements FieldSetMapper<DatiTerrenoMeta
 			e.printStackTrace();
 		}
 		
-		long fkIdColtura = fieldSet.readLong(FK_ID_COLTURA);
-		long fkIdMorfologia = fieldSet.readLong(FK_ID_MORFOLOGIA);
+		long idColtura = fieldSet.readLong(ID_COLTURA);
+		long idMorfologia = fieldSet.readLong(ID_MORFOLOGIA);
 		
 		
-		return new DatiTerrenoMetadata(phSuolo, umidita, capacitaAssorbente, porosita, temperatura, disponibilitaIrrigua, dataRilevazione, fkIdColtura, fkIdMorfologia);
+		return new DatiTerrenoMetadata(phSuolo, umidita, capacitaAssorbente, porosita, temperatura, disponibilitaIrrigua, dataRilevazione, idColtura, idMorfologia);
 	}
 
 }

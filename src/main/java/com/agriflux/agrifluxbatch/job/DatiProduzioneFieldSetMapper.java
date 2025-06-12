@@ -9,8 +9,8 @@ import com.agriflux.agrifluxbatch.model.DatiProduzioneMetadata;
 public class DatiProduzioneFieldSetMapper implements FieldSetMapper<DatiProduzioneMetadata>{
 
 	private static final String SPESE_ACCESSORIE = "speseAccessorie";
-	private static final String FK_ID_MORFOLOGIA = "fkIdMorfologia";
-	private static final String FK_ID_COLTURA = "fkIdColtura";
+	private static final String ID_MORFOLOGIA = "idMorfologia";
+	private static final String ID_COLTURA = "idColtura";
 	private static final String TEMPO_RACCOLTA = "tempoRaccolta";
 	private static final String TEMPO_MATURAZIONE = "tempoMaturazione";
 	private static final String TEMPO_TRAPIANTO = "tempoTrapianto";
@@ -30,11 +30,11 @@ public class DatiProduzioneFieldSetMapper implements FieldSetMapper<DatiProduzio
 		
 		String speseAccessorie = fieldSet.readString(SPESE_ACCESSORIE);
 		
-		long fkIdColtura = fieldSet.readLong(FK_ID_COLTURA);
-		long fkIdMorfologia = fieldSet.readLong(FK_ID_MORFOLOGIA);
+		long idColtura = fieldSet.readLong(ID_COLTURA);
+		long idMorfologia = fieldSet.readLong(ID_MORFOLOGIA);
 		
 		return new DatiProduzioneMetadata(numLavoratori, speseAccessorie, tempoSemina, tempoGerminazione,
-				tempoTrapianto, tempoMaturazione, tempoRaccolta, fkIdColtura, fkIdMorfologia);
+				tempoTrapianto, tempoMaturazione, tempoRaccolta, idColtura, idMorfologia);
 	}
 	
 }

@@ -17,11 +17,9 @@ public class Morfologia {
 	private long idMorfologia;
 	
 	private BigDecimal estensioneTerreno;
-	
 	private BigDecimal pendenza;
 	
 	private String esposizione;
-	
 	private String litologia;
 
 	public long getIdMorfologia() {

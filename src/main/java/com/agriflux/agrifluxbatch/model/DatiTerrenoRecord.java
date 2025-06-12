@@ -5,6 +5,6 @@ import java.util.Date;
 
 public record DatiTerrenoRecord(BigDecimal phSuolo, BigDecimal umidita, BigDecimal capacitaAssorbente,
 		BigDecimal porosita, BigDecimal temperatura, int disponibilitaIrrigua,
-		Date dataRilevazione, long fkIdColtura, long fkIdMorfologia) {
+		Date dataRilevazione, long idColtura, long idMorfologia) {
 
 }

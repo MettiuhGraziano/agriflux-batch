@@ -187,7 +187,7 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 		for (ProduzioneJoinColturaProjection projection : produzioneWithColturaProjection) {
 			
 			calendar.setTime(projection.getDataRaccolto());
-			String annoRiferimento = String.valueOf(calendar.getTime().getYear());
+			String annoRiferimento = String.valueOf(calendar.get(Calendar.YEAR));
 			
 			if (!response.isEmpty() && null != response.get(projection.getProdottoColtivato())) {
 				

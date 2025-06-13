@@ -13,6 +13,7 @@ import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
 import com.agriflux.agrifluxshared.dto.ColturaListPrezzoDataRaccoltoDTO;
 import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneColturaDTO;
+import com.agriflux.agrifluxshared.dto.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
@@ -72,5 +73,11 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/findColtureJoinProduzione")
 	public Map<String, Map<String, ProduzioneColturaDTO>> findColtureJoinProduzione() {
 		return agrifluxDataServiceImpl.findColtureJoinProduzione();
+	}
+
+	@Override
+	@GetMapping("/findProduzioneTempiJoinColtura")
+	public Map<String, List<ProduzioneColturaTempiDTO>> findProduzioneTempiJoinColtura() {
+		return agrifluxDataServiceImpl.findProduzioneTempiJoinColtura();
 	}
 }

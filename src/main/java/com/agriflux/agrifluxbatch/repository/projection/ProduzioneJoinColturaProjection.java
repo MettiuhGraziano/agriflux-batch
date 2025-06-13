@@ -4,10 +4,10 @@ import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public interface ProduzioneJoinColturaProjection extends Serializable{
+public interface ProduzioneJoinColturaProjection extends Serializable {
 	
 	String getProdottoColtivato();
-    Date getDataRaccolto();
+    String getAnnoRaccolto();
     BigDecimal getQuantitaRaccolto();
     BigDecimal getQuantitaRaccoltoVenduto();
     BigDecimal getFatturatoColtura();

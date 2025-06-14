@@ -3,7 +3,6 @@ package com.agriflux.agrifluxbatch.service;
 import java.math.BigDecimal;
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Calendar;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
@@ -26,6 +25,7 @@ import com.agriflux.agrifluxbatch.repository.DatiTerrenoRepository;
 import com.agriflux.agrifluxbatch.repository.projection.ColturaProdottoPrezzoDataProjection;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaProjection;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneMorfologiaColturaProjection;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
@@ -34,6 +34,7 @@ import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
+import com.agriflux.agrifluxshared.dto.ProduzioneMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
@@ -302,6 +303,25 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 		}
 		
 		return response;
+	}
+
+	@Override
+	public Map<Long, ProduzioneMorfologiaColturaDTO> findProduzioneJoinColturaMorfologia() {
+		
+		Map<Long, ProduzioneMorfologiaColturaDTO> result = new HashMap<Long, ProduzioneMorfologiaColturaDTO>();
+		
+		List<ProduzioneMorfologiaColturaProjection> projectionList = datiProduzioneRepository.findProduzioneWithColturaAndMorfologiaProjection();
+		
+		for (ProduzioneMorfologiaColturaProjection projection : projectionList) {
+			
+			ProduzioneMorfologiaColturaDTO dto = new ProduzioneMorfologiaColturaDTO(projection.getProdottoColtivato(),
+					projection.getDataRaccolto(), projection.getIdMorfologia(), projection.getEstensioneTerreno(),
+					projection.getPendenza(), projection.getEsposizione(), projection.getLitologia());
+			
+			result.put(projection.getIdProduzione(), dto);
+		}
+		
+		return result;
 	}
 
 }

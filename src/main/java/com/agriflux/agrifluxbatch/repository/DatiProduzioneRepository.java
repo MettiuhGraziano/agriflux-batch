@@ -10,6 +10,7 @@ import org.springframework.stereotype.Repository;
 import com.agriflux.agrifluxbatch.entity.Produzione;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaProjection;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneMorfologiaColturaProjection;
 
 @Repository
 public interface DatiProduzioneRepository extends CrudRepository<Produzione, Long>, PagingAndSortingRepository<Produzione, Long> {
@@ -25,4 +26,12 @@ public interface DatiProduzioneRepository extends CrudRepository<Produzione, Lon
 			+ "p.tempoTrapianto AS tempoTrapianto, " + "p.tempoMaturazione AS tempoMaturazione, "
 			+ "p.tempoRaccolta AS tempoRaccolta " + "FROM Produzione p JOIN p.coltura c")
 	List<ProduzioneJoinColturaTempiProjection> findProduzioneWithColturaTempiProjection();
+	
+	@Query("SELECT p.id AS idProduzione, " + " c.prodottoColtivato AS prodottoColtivato, "
+			+ "c.dataRaccolto AS dataRaccolto, " + "m.idMorfologia AS idMorfologia, "
+			+ "m.estensioneTerreno AS estensioneTerreno, " + "m.pendenza AS pendenza, "
+			+ "m.esposizione AS esposizione, " + "m.litologia AS litologia "
+			+ "FROM Produzione p JOIN p.coltura c JOIN p.morfologia m")
+	List<ProduzioneMorfologiaColturaProjection> findProduzioneWithColturaAndMorfologiaProjection();
+	
 }

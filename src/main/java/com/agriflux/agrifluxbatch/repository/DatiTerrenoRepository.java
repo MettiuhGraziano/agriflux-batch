@@ -14,6 +14,6 @@ import com.agriflux.agrifluxbatch.repository.projection.TerrenoMorfologiaColtura
 public interface DatiTerrenoRepository extends CrudRepository<Terreno, Long>, PagingAndSortingRepository<Terreno, Long> {
 	
 	@Query("SELECT m.idMorfologia AS idMorfologia, c.prodottoColtivato AS prodottoColtivato, c.idColtura AS idColtura, "
-			+ "t.dataRilevazione AS dataRilevazione FROM Terreno t JOIN t.morfologia m JOIN t.coltura c")
+			+ "t.dataRilevazione AS dataRilevazione FROM Terreno t JOIN t.morfologia m JOIN t.coltura c ORDER BY t.dataRilevazione ASC")
 	List<TerrenoMorfologiaColturaProjection> findTerrenoWithMorfologiaAndColturaProjection();
 }

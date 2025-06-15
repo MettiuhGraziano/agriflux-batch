@@ -20,5 +20,5 @@ public interface DatiColturaRepository extends CrudRepository<Coltura, Long>, Pa
 	
 	@Query("SELECT c.prodottoColtivato AS prodottoColtivato, c.prezzoKg AS prezzoKg, c.dataRaccolto AS dataRaccolto " +
 		       "FROM Coltura c ORDER BY c.dataRaccolto ASC")
-	List<ColturaProdottoPrezzoDataProjection> findPrezziAndDateColtura();
+	List<ColturaProdottoPrezzoDataProjection> findPrezziAndDateColturaProjection();
 }

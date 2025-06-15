@@ -17,6 +17,7 @@ import com.agriflux.agrifluxshared.dto.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
+import com.agriflux.agrifluxshared.dto.TerrenoMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
 @RestController("api/data")
@@ -86,5 +87,11 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/findProduzioneJoinColturaMorfologia")
 	public Map<Long, ProduzioneMorfologiaColturaDTO> findProduzioneJoinColturaMorfologia() {
 		return agrifluxDataServiceImpl.findProduzioneJoinColturaMorfologia();
+	}
+
+	@Override
+	@GetMapping("/findTerrenoJoinColturaMorfologia")
+	public Map<Long, List<TerrenoMorfologiaColturaDTO>> findTerrenoJoinColturaMorfologia() {
+		return agrifluxDataServiceImpl.findTerrenoJoinColturaMorfologia();
 	}
 }

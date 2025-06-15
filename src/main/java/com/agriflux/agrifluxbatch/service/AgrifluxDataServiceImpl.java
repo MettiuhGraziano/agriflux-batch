@@ -7,6 +7,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 import org.modelmapper.ModelMapper;
 import org.springframework.data.domain.Sort;
@@ -26,6 +27,7 @@ import com.agriflux.agrifluxbatch.repository.projection.ColturaProdottoPrezzoDat
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaProjection;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneMorfologiaColturaProjection;
+import com.agriflux.agrifluxbatch.repository.projection.TerrenoMorfologiaColturaProjection;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
 import com.agriflux.agrifluxshared.dto.ColturaDTO;
 import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
@@ -36,6 +38,7 @@ import com.agriflux.agrifluxshared.dto.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.dto.TerrenoDTO;
+import com.agriflux.agrifluxshared.dto.TerrenoMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
 @Service
@@ -152,7 +155,7 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 		
 		Map<String, ColturaListPrezzoDataRaccoltoDTO> colturaPrezzoDataMap = new HashMap<String, ColturaListPrezzoDataRaccoltoDTO>();
 		
-		List<ColturaProdottoPrezzoDataProjection> prezziAndDateColtura = datiColturaRepository.findPrezziAndDateColtura();
+		List<ColturaProdottoPrezzoDataProjection> prezziAndDateColtura = datiColturaRepository.findPrezziAndDateColturaProjection();
 		
 		for (ColturaProdottoPrezzoDataProjection projection : prezziAndDateColtura) {
 			
@@ -308,7 +311,7 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 	@Override
 	public Map<Long, ProduzioneMorfologiaColturaDTO> findProduzioneJoinColturaMorfologia() {
 		
-		Map<Long, ProduzioneMorfologiaColturaDTO> result = new HashMap<Long, ProduzioneMorfologiaColturaDTO>();
+		Map<Long, ProduzioneMorfologiaColturaDTO> response = new HashMap<Long, ProduzioneMorfologiaColturaDTO>();
 		
 		List<ProduzioneMorfologiaColturaProjection> projectionList = datiProduzioneRepository.findProduzioneWithColturaAndMorfologiaProjection();
 		
@@ -318,10 +321,38 @@ public class AgrifluxDataServiceImpl implements AgrifluxDataService{
 					projection.getDataRaccolto(), projection.getIdMorfologia(), projection.getEstensioneTerreno(),
 					projection.getPendenza(), projection.getEsposizione(), projection.getLitologia());
 			
-			result.put(projection.getIdProduzione(), dto);
+			response.put(projection.getIdProduzione(), dto);
 		}
 		
-		return result;
+		return response;
+	}
+
+	@Override
+	public Map<Long, List<TerrenoMorfologiaColturaDTO>> findTerrenoJoinColturaMorfologia() {
+		
+		Map<Long, List<TerrenoMorfologiaColturaDTO>> response = new HashMap<Long, List<TerrenoMorfologiaColturaDTO>>();
+		
+		List<TerrenoMorfologiaColturaProjection> projectionList = datiTerrenoRepository.findTerrenoWithMorfologiaAndColturaProjection();
+		
+		Map<String, List<Date>> projectionGroup = projectionList.stream().collect(Collectors.groupingBy(
+				p -> p.getIdMorfologia() + "-" + p.getIdColtura() + "-" + p.getProdottoColtivato(),
+				Collectors.mapping(TerrenoMorfologiaColturaProjection::getDataRilevazione, Collectors.toList())));
+		
+		for (String key : projectionGroup.keySet()) {
+			
+			String[] split = key.split("-");
+			TerrenoMorfologiaColturaDTO dto = new TerrenoMorfologiaColturaDTO(split[2], projectionGroup.get(key), Long.parseLong(split[1]));
+			
+			if (null != response.get(Long.parseLong(split[0]))) {
+				response.get(Long.parseLong(split[0])).add(dto);
+			} else {
+				List<TerrenoMorfologiaColturaDTO> dtoList = new ArrayList<TerrenoMorfologiaColturaDTO>();
+				dtoList.add(dto);
+				response.put(Long.parseLong(split[0]), dtoList);
+			}
+		}
+		
+		return response;
 	}
 
 }

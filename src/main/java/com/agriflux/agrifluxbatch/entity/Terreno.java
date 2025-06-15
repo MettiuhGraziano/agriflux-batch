@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -29,11 +29,11 @@ public class Terreno {
 	
 	private Date dataRilevazione;
 	
-	@OneToOne
+	@ManyToOne
     @JoinColumn(name = "ID_COLTURA")
 	private Coltura coltura;
 	
-	@OneToOne
+	@ManyToOne
     @JoinColumn(name = "ID_MORFOLOGIA")
 	private Morfologia morfologia;
 	

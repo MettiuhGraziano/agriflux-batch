@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.model;
+package com.agriflux.agrifluxbatch.model.coltura;
 
 import java.math.BigDecimal;
 import java.util.Date;

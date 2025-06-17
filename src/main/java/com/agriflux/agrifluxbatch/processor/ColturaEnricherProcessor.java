@@ -6,8 +6,8 @@ import java.util.Map;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import com.agriflux.agrifluxbatch.model.ColturaMetadata;
-import com.agriflux.agrifluxbatch.model.ColturaRecord;
+import com.agriflux.agrifluxbatch.model.coltura.ColturaMetadata;
+import com.agriflux.agrifluxbatch.model.coltura.ColturaRecord;
 import com.agriflux.agrifluxshared.enumeratori.TipoProdottoEnum;
 
 public class ColturaEnricherProcessor extends DatiProcessor implements ItemProcessor<ColturaMetadata, ColturaRecord>{

@@ -36,25 +36,25 @@ public class DatiProcessor {
 	@BeforeStep
 	public void init() {
 		
-		if (cacheColtura.isEmpty()) {
-			Iterable<Coltura> colture = colturaRepository.findAll(Sort.by(Sort.Direction.ASC, ID_COLTURA));
-
-			if (null != colture && colture.iterator().hasNext()) {
-				for (Coltura coltura : colture) {
-					cacheColtura.put(coltura.getIdColtura(), coltura);
-				}
-			}
-		}
-		
-		if (cacheMorfologia.isEmpty()) {
-			Iterable<Morfologia> morfologie = datiMorfologiciRepository.findAll(Sort.by(Sort.Direction.ASC, ID_MORFOLOGIA));
-
-			if (null != morfologie && morfologie.iterator().hasNext()) {
-				for (Morfologia morfologia : morfologie) {
-					cacheMorfologia.put(morfologia.getIdMorfologia(), morfologia);
-				}
-			}
-		}
+//		if (cacheColtura.isEmpty()) {
+//			Iterable<Coltura> colture = colturaRepository.findAll(Sort.by(Sort.Direction.ASC, ID_COLTURA));
+//
+//			if (null != colture && colture.iterator().hasNext()) {
+//				for (Coltura coltura : colture) {
+//					cacheColtura.put(coltura.getIdColtura(), coltura);
+//				}
+//			}
+//		}
+//		
+//		if (cacheMorfologia.isEmpty()) {
+//			Iterable<Morfologia> morfologie = datiMorfologiciRepository.findAll(Sort.by(Sort.Direction.ASC, ID_MORFOLOGIA));
+//
+//			if (null != morfologie && morfologie.iterator().hasNext()) {
+//				for (Morfologia morfologia : morfologie) {
+//					cacheMorfologia.put(morfologia.getIdMorfologia(), morfologia);
+//				}
+//			}
+//		}
 	}
 	
 	public Map<Long, Coltura> getCacheColtura() {

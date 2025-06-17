@@ -7,7 +7,7 @@ import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.validation.BindException;
 
-import com.agriflux.agrifluxbatch.model.ColturaMetadata;
+import com.agriflux.agrifluxbatch.model.coltura.ColturaMetadata;
 
 public class ColturaMetadataFieldSetMapper implements FieldSetMapper<ColturaMetadata> {
 

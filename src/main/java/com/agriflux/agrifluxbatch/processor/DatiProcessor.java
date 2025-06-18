@@ -2,18 +2,18 @@ package com.agriflux.agrifluxbatch.processor;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 import java.util.Random;
 
 import org.springframework.batch.core.annotation.BeforeStep;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.data.domain.Sort;
 import org.springframework.stereotype.Component;
 
 import com.agriflux.agrifluxbatch.entity.Coltura;
-import com.agriflux.agrifluxbatch.entity.Morfologia;
 import com.agriflux.agrifluxbatch.repository.DatiColturaRepository;
-import com.agriflux.agrifluxbatch.repository.DatiMorfologiciRepository;
+import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioRangeStagioneSumDTO;
+import com.agriflux.agrifluxshared.service.DatiOrtaggioService;
 
 @Component
 public class DatiProcessor {
@@ -22,16 +22,15 @@ public class DatiProcessor {
 	private DatiColturaRepository colturaRepository;
 	
 	@Autowired
-	private DatiMorfologiciRepository datiMorfologiciRepository;
+	private DatiOrtaggioService ortaggioService;
 	
 	private static final String ID_COLTURA = "idColtura";
-	private static final String ID_MORFOLOGIA = "idMorfologia";
 	private static final String DELIMITER = "|";
 	
 	private static Random random = new Random();
 	
 	private static final Map<Long, Coltura> cacheColtura = new HashMap<Long, Coltura>();
-	private static final Map<Long, Morfologia> cacheMorfologia = new HashMap<Long, Morfologia>();
+	private static final Map<Long, OrtaggioRangeStagioneSumDTO> cacheOrtaggio = new HashMap<Long, OrtaggioRangeStagioneSumDTO>();
 	
 	@BeforeStep
 	public void init() {
@@ -46,25 +45,26 @@ public class DatiProcessor {
 //			}
 //		}
 //		
-//		if (cacheMorfologia.isEmpty()) {
-//			Iterable<Morfologia> morfologie = datiMorfologiciRepository.findAll(Sort.by(Sort.Direction.ASC, ID_MORFOLOGIA));
-//
-//			if (null != morfologie && morfologie.iterator().hasNext()) {
-//				for (Morfologia morfologia : morfologie) {
-//					cacheMorfologia.put(morfologia.getIdMorfologia(), morfologia);
-//				}
-//			}
-//		}
+		if (cacheOrtaggio.isEmpty()) {
+			List<OrtaggioRangeStagioneSumDTO> ortaggioDtoList = ortaggioService.findAllOrtaggioRangeStagione();
+			
+			if (null != ortaggioDtoList && !ortaggioDtoList.isEmpty()) {
+				for (OrtaggioRangeStagioneSumDTO ortaggioDTO : ortaggioDtoList) {
+					cacheOrtaggio.put(ortaggioDTO.getIdOrtaggio(), ortaggioDTO);
+				}
+			}
+		}
+		
 	}
 	
 	public Map<Long, Coltura> getCacheColtura() {
 		return cacheColtura;
 	}
 	
-	public static Map<Long, Morfologia> getCacheMorfologia() {
-		return cacheMorfologia;
+	public Map<Long, OrtaggioRangeStagioneSumDTO> getCacheOrtaggio() {
+		return cacheOrtaggio;
 	}
-
+	
 	protected static BigDecimal generaRandomBigDecimalFromRange(String range) {
 
 		int delimiterIndex = range.indexOf(DELIMITER);

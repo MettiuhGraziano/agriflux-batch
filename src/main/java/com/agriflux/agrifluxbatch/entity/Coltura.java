@@ -1,12 +1,14 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -17,13 +19,18 @@ public class Coltura {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	private long idColtura;
 	
-	private String prodottoColtivato;
-	
 	private BigDecimal prezzoKg;
 	
-	private Date dataSemina;
+	private LocalDateTime dataSemina;
+	private LocalDateTime dataRaccolto;
 	
-	private Date dataRaccolto;
+	@OneToOne
+    @JoinColumn(name = "ID_PARTICELLA")
+	private Particella particella;
+	
+	@OneToOne
+    @JoinColumn(name = "ID_ORTAGGIO")
+	private Ortaggio ortaggio;
 	
 	public long getIdColtura() {
 		return idColtura;
@@ -33,27 +40,19 @@ public class Coltura {
 		this.idColtura = idColtura;
 	}
 	
-	public String getProdottoColtivato() {
-		return prodottoColtivato;
-	}
-	
-	public void setProdottoColtivato(String prodottoColtivato) {
-		this.prodottoColtivato = prodottoColtivato;
-	}
-	
-	public Date getDataSemina() {
+	public LocalDateTime getDataSemina() {
 		return dataSemina;
 	}
 	
-	public void setDataSemina(Date dataSemina) {
+	public void setDataSemina(LocalDateTime dataSemina) {
 		this.dataSemina = dataSemina;
 	}
 	
-	public Date getDataRaccolto() {
+	public LocalDateTime getDataRaccolto() {
 		return dataRaccolto;
 	}
 	
-	public void setDataRaccolto(Date dataRaccolto) {
+	public void setDataRaccolto(LocalDateTime dataRaccolto) {
 		this.dataRaccolto = dataRaccolto;
 	}
 
@@ -63,6 +62,22 @@ public class Coltura {
 
 	public void setPrezzoKg(BigDecimal prezzoKg) {
 		this.prezzoKg = prezzoKg;
+	}
+
+	public Particella getParticella() {
+		return particella;
+	}
+
+	public void setParticella(Particella particella) {
+		this.particella = particella;
+	}
+
+	public Ortaggio getOrtaggio() {
+		return ortaggio;
+	}
+
+	public void setOrtaggio(Ortaggio ortaggio) {
+		this.ortaggio = ortaggio;
 	}
 	
 }

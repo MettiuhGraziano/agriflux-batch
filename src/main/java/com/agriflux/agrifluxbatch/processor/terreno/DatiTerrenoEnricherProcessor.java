@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.processor;
+package com.agriflux.agrifluxbatch.processor.terreno;
 
 import java.math.BigDecimal;
 import java.util.HashMap;
@@ -6,8 +6,9 @@ import java.util.Map;
 
 import org.springframework.batch.item.ItemProcessor;
 
-import com.agriflux.agrifluxbatch.model.DatiTerrenoMetadata;
-import com.agriflux.agrifluxbatch.model.DatiTerrenoRecord;
+import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoMetadata;
+import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoRecord;
+import com.agriflux.agrifluxbatch.processor.DatiProcessor;
 
 public class DatiTerrenoEnricherProcessor extends DatiProcessor implements ItemProcessor<DatiTerrenoMetadata, DatiTerrenoRecord>{
 	

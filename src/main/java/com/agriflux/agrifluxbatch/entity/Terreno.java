@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDateTime;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -12,7 +12,7 @@ import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "DATI_TERRENO")
+@Table(name = "DATI_RILEVAZIONE_TERRENO")
 public class Terreno {
 	
 	@Id
@@ -27,15 +27,11 @@ public class Terreno {
 	
 	private int disponibilitaIrrigua;
 	
-	private Date dataRilevazione;
+	private LocalDateTime dataRilevazione;
 	
 	@ManyToOne
     @JoinColumn(name = "ID_COLTURA")
 	private Coltura coltura;
-	
-	@ManyToOne
-    @JoinColumn(name = "ID_MORFOLOGIA")
-	private Morfologia morfologia;
 	
 	public long getIdRilevazioneTerreno() {
 		return idRilevazioneTerreno;
@@ -93,11 +89,11 @@ public class Terreno {
 		this.disponibilitaIrrigua = disponibilitaIrrigua;
 	}
 	
-	public Date getDataRilevazione() {
+	public LocalDateTime getDataRilevazione() {
 		return dataRilevazione;
 	}
 	
-	public void setDataRilevazione(Date dataRilevazione) {
+	public void setDataRilevazione(LocalDateTime dataRilevazione) {
 		this.dataRilevazione = dataRilevazione;
 	}
 	
@@ -107,14 +103,6 @@ public class Terreno {
 
 	public void setColtura(Coltura coltura) {
 		this.coltura = coltura;
-	}
-	
-	public Morfologia getMorfologia() {
-		return morfologia;
-	}
-
-	public void setMorfologia(Morfologia morfologia) {
-		this.morfologia = morfologia;
 	}
 	
 }

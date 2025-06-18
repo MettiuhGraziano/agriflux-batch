@@ -1,5 +1,11 @@
 package com.agriflux.agrifluxbatch.configuration;
 
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.Collection;
+import java.util.List;
+import java.util.stream.Collectors;
+
 import javax.sql.DataSource;
 
 import org.springframework.batch.core.Job;
@@ -9,11 +15,14 @@ import org.springframework.batch.core.configuration.annotation.StepScope;
 import org.springframework.batch.core.job.builder.JobBuilder;
 import org.springframework.batch.core.repository.JobRepository;
 import org.springframework.batch.core.step.builder.StepBuilder;
+import org.springframework.batch.item.Chunk;
 import org.springframework.batch.item.ItemProcessor;
 import org.springframework.batch.item.ItemReader;
 import org.springframework.batch.item.ItemWriter;
 import org.springframework.batch.item.database.JdbcBatchItemWriter;
+import org.springframework.batch.item.database.JdbcCursorItemReader;
 import org.springframework.batch.item.database.builder.JdbcBatchItemWriterBuilder;
+import org.springframework.batch.item.database.builder.JdbcCursorItemReaderBuilder;
 import org.springframework.batch.item.file.FlatFileItemReader;
 import org.springframework.batch.item.file.builder.FlatFileItemReaderBuilder;
 import org.springframework.context.annotation.Bean;
@@ -23,28 +32,34 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 
-import com.agriflux.agrifluxbatch.job.ColturaMetadataFieldSetMapper;
 import com.agriflux.agrifluxbatch.job.DatiProduzioneFieldSetMapper;
-import com.agriflux.agrifluxbatch.job.DatiTerrenoFieldSetMapper;
+import com.agriflux.agrifluxbatch.job.particella.DatiParticellaRowMapper;
+import com.agriflux.agrifluxbatch.job.terreno.DatiTerrenoFieldSetMapper;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
 import com.agriflux.agrifluxbatch.model.DatiProduzioneMetadata;
 import com.agriflux.agrifluxbatch.model.DatiProduzioneRecord;
-import com.agriflux.agrifluxbatch.model.DatiTerrenoMetadata;
-import com.agriflux.agrifluxbatch.model.DatiTerrenoRecord;
-import com.agriflux.agrifluxbatch.model.coltura.ColturaMetadata;
-import com.agriflux.agrifluxbatch.model.coltura.ColturaRecord;
+import com.agriflux.agrifluxbatch.model.coltura.DatiColturaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaMetadata;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecord;
-import com.agriflux.agrifluxbatch.processor.ColturaEnricherProcessor;
+import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecordReduce;
+import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoMetadata;
+import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoRecord;
 import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiProduzioneEnricherProcessor;
-import com.agriflux.agrifluxbatch.processor.DatiTerrenoEnricherProcessor;
+import com.agriflux.agrifluxbatch.processor.coltura.DatiColturaCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.particella.DatiParticellaCustomProcessor;
+import com.agriflux.agrifluxbatch.processor.terreno.DatiTerrenoEnricherProcessor;
 
 @Configuration
 @EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "transactionManager")
 public class AgrifluxJobsConfiguration {
+
+//    private final DataSource batchDataSource;
+//
+//    AgrifluxJobsConfiguration(DataSource batchDataSource) {
+//        this.batchDataSource = batchDataSource;
+//    }
 	
 	@Bean
 	DataSource batchDataSource() {
@@ -62,11 +77,10 @@ public class AgrifluxJobsConfiguration {
 	//JOB SIMULAZIONE
 	
 	@Bean
-	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createColturaStep,
-			Step createDatiAmbientaliStep, Step createDatiTerrenoStep, Step createDatiProduzioneStep) {
+	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createDatiColturaStep) {
 		return new JobBuilder("simulationJob", jobRepository)
 				.start(createDatiParticellaStep)
-//				.next(createDatiAmbientaliStep)
+				.next(createDatiColturaStep)
 //				.next(createDatiParticelleStep)
 //				.next(createDatiTerrenoStep)
 //				.next(createDatiProduzioneStep)
@@ -121,48 +135,65 @@ public class AgrifluxJobsConfiguration {
 	//SECONDO STEP
 	
 	@Bean
-	Step createColturaStep(JobRepository jobRepository, 
+	Step createDatiColturaStep(JobRepository jobRepository, 
 			JdbcTransactionManager transactionManager, 
-			ItemReader<ColturaMetadata> colturaMetadataFileReader,
-			ItemProcessor<ColturaMetadata, ColturaRecord> colturaEnricherProcessor,
-			ItemWriter<ColturaRecord> colturaDataTableWriter) {
-		return new StepBuilder("createColturaStep", jobRepository).<ColturaMetadata, ColturaRecord>chunk(10, transactionManager)
-					.reader(colturaMetadataFileReader)
-					.processor(colturaEnricherProcessor)
-					.writer(colturaDataTableWriter)
+			ItemReader<DatiParticellaRecordReduce> datiParticellaCustomItemReader,
+			ItemProcessor<DatiParticellaRecordReduce, List<DatiColturaRecord>> datiColturaCustomProcessor,
+			JdbcBatchItemWriter<DatiColturaRecord> datiColturaDataTableWriter) {
+		return new StepBuilder("createDatiColturaStep", jobRepository).<DatiParticellaRecordReduce, List<DatiColturaRecord>>chunk(10, transactionManager)
+					.reader(datiParticellaCustomItemReader)
+					.processor(datiColturaCustomProcessor)
+					.writer(appiattisciRecordListItemWriter(datiColturaDataTableWriter))
 					.build();
 	}
 	
 	@Bean
-	FlatFileItemReader<ColturaMetadata> colturaMetadataFileReader() {
-	    return new FlatFileItemReaderBuilder<ColturaMetadata>()
-	            .name("colturaMetadataFileReader")
-	            .resource(new FileSystemResource("src/main/resources/dati-coltura-metadata.txt"))
-	            .delimited()
-	            .names("prezzoKg", "dataSemina", "dataRaccolto")
-	            .fieldSetMapper(new ColturaMetadataFieldSetMapper())
-	            .build();
+	JdbcCursorItemReader<DatiParticellaRecordReduce> datiParticellaCustomItemReader() {
+		return new JdbcCursorItemReaderBuilder<DatiParticellaRecordReduce>()
+				.dataSource(batchDataSource())
+				.name("datiParticellaCustomItemReader")
+				.sql("SELECT ID_PARTICELLA, ANNO_INSTALLAZIONE FROM DATI_PARTICELLA")
+				.rowMapper(new DatiParticellaRowMapper())
+				.build();
 	}
 	
 	@Bean
-	ColturaEnricherProcessor colturaEnricherProcessor() {
-		return new ColturaEnricherProcessor();
+	DatiColturaCustomProcessor datiColturaCustomProcessor() {
+		return new DatiColturaCustomProcessor();
 	}
-	
+
 	@Bean
-	JdbcBatchItemWriter<ColturaRecord> colturaDataTableWriter(DataSource dataSource) {
+	JdbcBatchItemWriter<DatiColturaRecord> datiColturaDataTableWriter(DataSource dataSource) {
 		String sql = """
-				INSERT INTO DATI_COLTURA (PRODOTTO_COLTIVATO, PREZZO_KG, DATA_SEMINA, DATA_RACCOLTO)
-				VALUES (:prodottoColtivato, :prezzoKg, :dataSemina, :dataRaccolto)
+				INSERT INTO DATI_COLTURA (PREZZO_KG, DATA_SEMINA, DATA_RACCOLTO, ID_PARTICELLA, ID_ORTAGGIO)
+				VALUES (:prezzoKg, :dataSemina, :dataRaccolto, :idParticella, :idOrtaggio)
 				""";
-	    return new JdbcBatchItemWriterBuilder<ColturaRecord>()
+	    return new JdbcBatchItemWriterBuilder<DatiColturaRecord>()
 	            .dataSource(dataSource)
 	            .sql(sql)
 	            .beanMapped()
 	            .build();
 	}
 	
-	//SECONDO STEP
+	@Bean
+	ItemWriter<List<DatiColturaRecord>> appiattisciRecordListItemWriter(JdbcBatchItemWriter<DatiColturaRecord> jdbcItemWriter) {
+	    return items -> {
+	        List<DatiColturaRecord> listaAppiattita = items.getItems().stream()
+	            .flatMap(Collection::stream)
+	            .collect(Collectors.toList());
+
+	        /*
+	         * Dato che Spring Batch non gestisce in scrittura una lista di oggetti ma un Chunk,
+	         * ne creo uno manuale ad hoc.
+	         */
+	        Chunk<DatiColturaRecord> chunk = new Chunk<>(listaAppiattita);
+
+	        jdbcItemWriter.write(chunk);
+	    };
+	}
+
+
+	//TERZO STEP
 	
 	@Bean
 	Step createDatiAmbientaliStep(JobRepository jobRepository, 

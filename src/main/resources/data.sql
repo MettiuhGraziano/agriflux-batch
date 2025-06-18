@@ -12,10 +12,10 @@ INSERT INTO DATI_FAMIGLIA (TIPOLOGIA, DESCRIZIONE) VALUES
 
 -- DATI_RANGE_STAGIONE
 INSERT INTO DATI_RANGE_STAGIONE (MESE_SEMINA_MIN, MESE_SEMINA_MAX, STAGIONE) VALUES 
-('02', '04', 'Primavera'),
-('03', '05', 'Primavera/Estate'),
-('07', '09', 'Estate'),
-('08', '11', 'Autunno'),
+('1', '4', 'Primavera'),
+('3', '6', 'Primavera/Estate'),
+('7', '9', 'Estate'),
+('8', '11', 'Autunno'),
 ('10', '12', 'Autunno/Inverno');
 
 -- DATI_ORTAGGIO

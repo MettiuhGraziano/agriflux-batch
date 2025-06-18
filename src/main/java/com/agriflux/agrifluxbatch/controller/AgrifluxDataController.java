@@ -8,16 +8,15 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agriflux.agrifluxbatch.service.AgrifluxDataServiceImpl;
 import com.agriflux.agrifluxshared.dto.AmbienteDTO;
-import com.agriflux.agrifluxshared.dto.ColturaDTO;
-import com.agriflux.agrifluxshared.dto.ColturaGroupByProdottoDTO;
-import com.agriflux.agrifluxshared.dto.ColturaListPrezzoDataRaccoltoDTO;
-import com.agriflux.agrifluxshared.dto.MorfologiaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.ProduzioneMorfologiaColturaDTO;
-import com.agriflux.agrifluxshared.dto.TerrenoDTO;
-import com.agriflux.agrifluxshared.dto.TerrenoMorfologiaColturaDTO;
+import com.agriflux.agrifluxshared.dto.coltura.ColturaDTO;
+import com.agriflux.agrifluxshared.dto.coltura.ColturaGroupByProdottoDTO;
+import com.agriflux.agrifluxshared.dto.coltura.ColturaListPrezzoDataRaccoltoDTO;
+import com.agriflux.agrifluxshared.dto.terreno.TerrenoDTO;
+import com.agriflux.agrifluxshared.dto.terreno.TerrenoMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
 @RestController("api/data")
@@ -39,12 +38,6 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/datiAmbientali")
 	public List<AmbienteDTO> findAllAmbienteSortById() {
 		return agrifluxDataServiceImpl.findAllAmbienteSortById();
-	}
-
-	@Override
-	@GetMapping("/datiMorfologici")
-	public List<MorfologiaDTO> findAllMorfologiaSortById() {
-		return agrifluxDataServiceImpl.findAllMorfologiaSortById();
 	}
 
 	@Override

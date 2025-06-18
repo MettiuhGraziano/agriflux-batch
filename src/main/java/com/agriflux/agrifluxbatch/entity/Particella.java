@@ -6,6 +6,8 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,7 +28,9 @@ public class Particella {
 	private BigDecimal estensione;
 	private BigDecimal pendenza;
 	
-	private long idLitologia;
+	@OneToOne
+    @JoinColumn(name = "ID_LITOLOGIA")
+	private Litologia litologia;
 
 	public long getIdParticella() {
 		return idParticella;
@@ -100,12 +104,12 @@ public class Particella {
 		this.pendenza = pendenza;
 	}
 
-	public long getIdLitologia() {
-		return idLitologia;
+	public Litologia getLitologia() {
+		return litologia;
 	}
 
-	public void setIdLitologia(long idLitologia) {
-		this.idLitologia = idLitologia;
+	public void setLitologia(Litologia litologia) {
+		this.litologia = litologia;
 	}
 	
 }

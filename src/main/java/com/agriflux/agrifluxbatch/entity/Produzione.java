@@ -34,10 +34,6 @@ public class Produzione {
     @JoinColumn(name = "ID_COLTURA")
     private Coltura coltura;
 	
-	@OneToOne
-    @JoinColumn(name = "ID_MORFOLOGIA")
-	private Morfologia morfologia;
-	
 	public long getIdProduzione() {
 		return idProduzione;
 	}
@@ -132,14 +128,6 @@ public class Produzione {
 
 	public void setColtura(Coltura coltura) {
 		this.coltura = coltura;
-	}
-	
-	public Morfologia getMorfologia() {
-		return morfologia;
-	}
-
-	public void setMorfologia(Morfologia morfologia) {
-		this.morfologia = morfologia;
 	}
 	
 }

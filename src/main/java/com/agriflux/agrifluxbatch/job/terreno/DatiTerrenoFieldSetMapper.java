@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.job;
+package com.agriflux.agrifluxbatch.job.terreno;
 
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -8,7 +8,7 @@ import org.springframework.batch.item.file.mapping.FieldSetMapper;
 import org.springframework.batch.item.file.transform.FieldSet;
 import org.springframework.validation.BindException;
 
-import com.agriflux.agrifluxbatch.model.DatiTerrenoMetadata;
+import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoMetadata;
 
 public class DatiTerrenoFieldSetMapper implements FieldSetMapper<DatiTerrenoMetadata>{
 

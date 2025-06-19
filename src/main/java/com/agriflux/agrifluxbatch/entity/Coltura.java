@@ -8,7 +8,7 @@ import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.ManyToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -24,11 +24,11 @@ public class Coltura {
 	private LocalDateTime dataSemina;
 	private LocalDateTime dataRaccolto;
 	
-	@OneToOne
+	@ManyToOne
     @JoinColumn(name = "ID_PARTICELLA")
 	private Particella particella;
 	
-	@OneToOne
+	@ManyToOne
     @JoinColumn(name = "ID_ORTAGGIO")
 	private Ortaggio ortaggio;
 	

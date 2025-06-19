@@ -30,23 +30,23 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 
-import com.agriflux.agrifluxbatch.job.DatiProduzioneFieldSetMapper;
 import com.agriflux.agrifluxbatch.job.particella.DatiParticellaRowMapper;
+import com.agriflux.agrifluxbatch.job.produzione.DatiProduzioneRowMapper;
 import com.agriflux.agrifluxbatch.job.terreno.DatiTerrenoFieldSetMapper;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
 import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
-import com.agriflux.agrifluxbatch.model.DatiProduzioneMetadata;
-import com.agriflux.agrifluxbatch.model.DatiProduzioneRecord;
 import com.agriflux.agrifluxbatch.model.coltura.DatiColturaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaMetadata;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecordReduce;
+import com.agriflux.agrifluxbatch.model.produzione.DatiColturaJoinParticellaRecord;
+import com.agriflux.agrifluxbatch.model.produzione.DatiProduzioneRecord;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoMetadata;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoRecord;
 import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
-import com.agriflux.agrifluxbatch.processor.DatiProduzioneEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.coltura.DatiColturaCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.particella.DatiParticellaCustomProcessor;
+import com.agriflux.agrifluxbatch.processor.produzione.DatiProduzioneCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.terreno.DatiRilevazioneTerrenoCustomProcessor;
 
 @Configuration
@@ -70,13 +70,13 @@ public class AgrifluxJobsConfiguration {
 	
 	@Bean
 	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createDatiColturaStep,
-			Step createDatiRilevazioneTerrenoStep) {
+			Step createDatiRilevazioneTerrenoStep, Step createDatiProduzioneStep) {
 		return new JobBuilder("simulationJob", jobRepository)
 				.start(createDatiParticellaStep)
 				.next(createDatiColturaStep)
 				.next(createDatiRilevazioneTerrenoStep)
+				.next(createDatiProduzioneStep)
 //				.next(createDatiTerrenoStep)
-//				.next(createDatiProduzioneStep)
 				.build();
 	}
 	
@@ -253,16 +253,65 @@ public class AgrifluxJobsConfiguration {
 	//QUARTO STEP
 	
 	@Bean
+	Step createDatiProduzioneStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiColturaJoinParticellaRecord> datiProduzioneCustomItemReader,
+			ItemProcessor<DatiColturaJoinParticellaRecord, DatiProduzioneRecord> datiProduzioneCustomProcessor,
+			ItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter) {
+		return new StepBuilder("createDatiProduzioneStep", jobRepository).<DatiColturaJoinParticellaRecord, DatiProduzioneRecord>chunk(10, transactionManager)
+				.reader(datiProduzioneCustomItemReader)
+				.processor(datiProduzioneCustomProcessor)
+				.writer(datiProduzioneDataTableWriter)
+				.build();
+	}
+	
+	@Bean
+	JdbcCursorItemReader<DatiColturaJoinParticellaRecord> datiProduzioneCustomItemReader() {
+		return new JdbcCursorItemReaderBuilder<DatiColturaJoinParticellaRecord>()
+				.dataSource(batchDataSource())
+				.name("datiProduzioneCustomItemReader")
+				.sql("""
+						SELECT c.ID_COLTURA, c.PREZZO_KG, p.ESTENSIONE, o.PESO_MEDIO, o.VOLUME_MQ
+						FROM DATI_COLTURA c
+						LEFT JOIN DATI_PARTICELLA p ON c.ID_PARTICELLA = p.ID_PARTICELLA
+						LEFT JOIN DATI_ORTAGGIO o ON c.ID_ORTAGGIO = o.ID_ORTAGGIO
+						ORDER BY c.ID_COLTURA ASC
+						""")
+				.rowMapper(new DatiProduzioneRowMapper())
+				.build();
+	}
+	
+	@Bean
+	DatiProduzioneCustomProcessor datiProduzioneCustomProcessor() {
+		return new DatiProduzioneCustomProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_PRODUZIONE (QUANTITA_RACCOLTO, QUANTITA_RACCOLTO_VENDUTO,
+				QUANTITA_RACCOLTO_MARCIO, QUANTITA_RACCOLTO_TERZI, FATTURATO_RACCOLTO,
+				 	NUM_LAVORATORI, SPESE_PRODUZIONE, ID_COLTURA)
+				VALUES (:quantitaRaccolto, :quantitaRaccoltoVenduto, :quantitaRaccoltoMarcio,
+					:quantitaRaccoltoTerzi, :fatturatoRaccolto, :numLavoratori, :speseProduzione, :idColtura)
+				""";
+		return new JdbcBatchItemWriterBuilder<DatiProduzioneRecord>().dataSource(dataSource).sql(sql).beanMapped()
+				.build();
+	}
+	
+	//TODO QUINTO STEP
+	
+	@Bean
 	Step createDatiAmbientaliStep(JobRepository jobRepository, 
 			JdbcTransactionManager transactionManager,
 			ItemReader<DatiAmbientaliMetadata> datiAmbientaliItemReader,
 			ItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter,
 			ItemProcessor<DatiAmbientaliMetadata, DatiAmbientaliRecord> datiAmbientaliEnricherProcessor) {
 		return new StepBuilder("createDatiAmbientaliStep", jobRepository).<DatiAmbientaliMetadata, DatiAmbientaliRecord>chunk(10, transactionManager)
-					.reader(datiAmbientaliItemReader)
-					.processor(datiAmbientaliEnricherProcessor)
-					.writer(datiAmbientaliDataTableWriter)
-					.build();
+				.reader(datiAmbientaliItemReader)
+				.processor(datiAmbientaliEnricherProcessor)
+				.writer(datiAmbientaliDataTableWriter)
+				.build();
 	}
 	
 	@Bean
@@ -291,64 +340,11 @@ public class AgrifluxJobsConfiguration {
 				VALUES (:temperaturaMedia, :umiditaMedia, :precipitazioni, :irraggiamentoMedio, 
 						:ombreggiamentoMedio, :dataRilevazione, :idColtura)
 				""";
-	    return new JdbcBatchItemWriterBuilder<DatiAmbientaliRecord>()
-	            .dataSource(dataSource)
-	            .sql(sql)
-	            .beanMapped()
-	            .build();
-	}
-	
-	
-	//TODO QUINTO STEP
-	
-	@Bean
-	Step createDatiProduzioneStep(JobRepository jobRepository, 
-			JdbcTransactionManager transactionManager,
-			ItemReader<DatiProduzioneMetadata> datiProduzioneItemReader,
-			ItemProcessor<DatiProduzioneMetadata, DatiProduzioneRecord> datiProduzioneEnricherProcessor,
-			ItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter) {
-		return new StepBuilder("createDatiProduzioneStep", jobRepository).<DatiProduzioneMetadata, DatiProduzioneRecord>chunk(10, transactionManager)
-				.reader(datiProduzioneItemReader)
-				.processor(datiProduzioneEnricherProcessor)
-				.writer(datiProduzioneDataTableWriter)
+		return new JdbcBatchItemWriterBuilder<DatiAmbientaliRecord>()
+				.dataSource(dataSource)
+				.sql(sql)
+				.beanMapped()
 				.build();
-	}
-	
-	@Bean
-	@StepScope
-	FlatFileItemReader<DatiProduzioneMetadata> datiProduzioneItemReader(){
-		return new FlatFileItemReaderBuilder<DatiProduzioneMetadata>()
-				.name("datiProduzioneItemReader")
-				.resource(new FileSystemResource("src/main/resources/dati-produzione-metadata.txt"))
-				.delimited()
-				.names("numLavoratori", "speseAccessorie", "tempoSemina", "tempoGerminazione", 
-						"tempoTrapianto", "tempoMaturazione", "tempoRaccolta", "idColtura",
-						"idMorfologia")
-				.fieldSetMapper(new DatiProduzioneFieldSetMapper())
-				.build();
-	}
-	
-	@Bean
-	DatiProduzioneEnricherProcessor datiProduzioneEnricherProcessor() {
-		return new DatiProduzioneEnricherProcessor();
-	}
-	
-	@Bean
-	JdbcBatchItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter(DataSource dataSource) {
-		String sql = """
-				INSERT INTO DATI_PRODUZIONE (QUANTITA_RACCOLTO, QUANTITA_RACCOLTO_VENDUTO, FATTURATO_COLTURA,
-				 	NUM_LAVORATORI, SPESE_ACCESSORIE, TEMPO_SEMINA, TEMPO_GERMINAZIONE, 
-				 	TEMPO_TRAPIANTO, TEMPO_MATURAZIONE, TEMPO_RACCOLTA, ID_COLTURA,
-				 	ID_MORFOLOGIA)
-				VALUES (:quantitaRaccolto, :quantitaRaccoltoVenduto, :fatturatoColtura, :numLavoratori,
-				 	:speseAccessorie, :tempoSemina, :tempoGerminazione, :tempoTrapianto,
-				 	:tempoMaturazione, :tempoRaccolta, :idColtura, :idMorfologia)
-				""";
-	    return new JdbcBatchItemWriterBuilder<DatiProduzioneRecord>()
-	            .dataSource(dataSource)
-	            .sql(sql)
-	            .beanMapped()
-	            .build();
 	}
 	
 }

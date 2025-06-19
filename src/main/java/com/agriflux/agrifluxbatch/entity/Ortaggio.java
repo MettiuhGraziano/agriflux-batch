@@ -1,12 +1,14 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -36,6 +38,17 @@ public class Ortaggio {
 	@OneToOne
     @JoinColumn(name = "ID_RANGE_STAGIONE")
 	private RangeStagione rangeStagione;
+	
+	@OneToMany
+	private List<Coltura> colture;
+
+	public List<Coltura> getColture() {
+		return colture;
+	}
+
+	public void setColture(List<Coltura> colture) {
+		this.colture = colture;
+	}
 
 	public long getIdOrtaggio() {
 		return idOrtaggio;

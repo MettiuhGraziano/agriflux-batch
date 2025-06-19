@@ -32,7 +32,6 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 					generateColtura(item, response);
 				} else {
 					LocalDateTime dataPrimaSemina = LocalDateTime.of(Integer.parseInt(item.annoInstallazione()), 2, 10, 0, 0);
-					//LocalDateTime dataPrimaSemina = LocalDateTime.parse(dataPrimaSeminaFormat);
 					
 					cacheDateParticella.put(item.idParticella(), dataPrimaSemina);
 					

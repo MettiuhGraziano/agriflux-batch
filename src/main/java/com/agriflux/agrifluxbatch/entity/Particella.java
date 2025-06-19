@@ -37,14 +37,9 @@ public class Particella {
 	@OneToMany(mappedBy = "particella")
 	private List<Terreno> rilevazioniTerreno;
 	
-	public List<Terreno> getRilevazioneTerreni() {
-		return rilevazioniTerreno;
-	}
-
-	public void setRilevazioneTerreni(List<Terreno> rilevazioniTerreno) {
-		this.rilevazioniTerreno = rilevazioniTerreno;
-	}
-
+	@OneToMany(mappedBy = "particella")
+	private List<Coltura> colture;
+	
 	public long getIdParticella() {
 		return idParticella;
 	}
@@ -123,6 +118,22 @@ public class Particella {
 
 	public void setLitologia(Litologia litologia) {
 		this.litologia = litologia;
+	}
+	
+	public List<Terreno> getRilevazioneTerreni() {
+		return rilevazioniTerreno;
+	}
+
+	public void setRilevazioneTerreni(List<Terreno> rilevazioniTerreno) {
+		this.rilevazioniTerreno = rilevazioniTerreno;
+	}
+
+	public List<Coltura> getColture() {
+		return colture;
+	}
+
+	public void setColture(List<Coltura> colture) {
+		this.colture = colture;
 	}
 	
 }

@@ -1,9 +1,8 @@
 package com.agriflux.agrifluxbatch.repository.projection;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 
-public interface ProduzioneJoinColturaProjection extends Serializable {
+public interface ProduzioneJoinColturaProjection {
 	
 	String getProdottoColtivato();
     String getAnnoRaccolto();

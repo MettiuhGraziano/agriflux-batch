@@ -13,7 +13,7 @@ import com.agriflux.agrifluxbatch.repository.DatiOrtaggioRepository;
 import com.agriflux.agrifluxbatch.repository.projection.OrtaggioRangeStagioneProjection;
 import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioDTO;
 import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioRangeStagioneSumDTO;
-import com.agriflux.agrifluxshared.service.DatiOrtaggioService;
+import com.agriflux.agrifluxshared.service.ortaggio.DatiOrtaggioService;
 
 @Service
 public class DatiOrtaggioServiceImpl implements DatiOrtaggioService {

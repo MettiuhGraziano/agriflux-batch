@@ -1,12 +1,14 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
+import java.util.List;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
 import jakarta.persistence.JoinColumn;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
@@ -31,6 +33,17 @@ public class Particella {
 	@OneToOne
     @JoinColumn(name = "ID_LITOLOGIA")
 	private Litologia litologia;
+	
+	@OneToMany(mappedBy = "particella")
+	private List<Terreno> rilevazioniTerreno;
+	
+	public List<Terreno> getRilevazioneTerreni() {
+		return rilevazioniTerreno;
+	}
+
+	public void setRilevazioneTerreni(List<Terreno> rilevazioniTerreno) {
+		this.rilevazioniTerreno = rilevazioniTerreno;
+	}
 
 	public long getIdParticella() {
 		return idParticella;

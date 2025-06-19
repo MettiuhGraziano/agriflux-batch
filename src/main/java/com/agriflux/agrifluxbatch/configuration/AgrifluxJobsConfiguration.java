@@ -1,7 +1,5 @@
 package com.agriflux.agrifluxbatch.configuration;
 
-import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -43,24 +41,18 @@ import com.agriflux.agrifluxbatch.model.coltura.DatiColturaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaMetadata;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecordReduce;
-import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoMetadata;
-import com.agriflux.agrifluxbatch.model.terreno.DatiTerrenoRecord;
+import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoMetadata;
+import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoRecord;
 import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.DatiProduzioneEnricherProcessor;
 import com.agriflux.agrifluxbatch.processor.coltura.DatiColturaCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.particella.DatiParticellaCustomProcessor;
-import com.agriflux.agrifluxbatch.processor.terreno.DatiTerrenoEnricherProcessor;
+import com.agriflux.agrifluxbatch.processor.terreno.DatiRilevazioneTerrenoCustomProcessor;
 
 @Configuration
 @EnableBatchProcessing(dataSourceRef = "batchDataSource", transactionManagerRef = "transactionManager")
 public class AgrifluxJobsConfiguration {
 
-//    private final DataSource batchDataSource;
-//
-//    AgrifluxJobsConfiguration(DataSource batchDataSource) {
-//        this.batchDataSource = batchDataSource;
-//    }
-	
 	@Bean
 	DataSource batchDataSource() {
 		return new EmbeddedDatabaseBuilder().setType(EmbeddedDatabaseType.H2)
@@ -77,11 +69,12 @@ public class AgrifluxJobsConfiguration {
 	//JOB SIMULAZIONE
 	
 	@Bean
-	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createDatiColturaStep) {
+	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createDatiColturaStep,
+			Step createDatiRilevazioneTerrenoStep) {
 		return new JobBuilder("simulationJob", jobRepository)
 				.start(createDatiParticellaStep)
 				.next(createDatiColturaStep)
-//				.next(createDatiParticelleStep)
+				.next(createDatiRilevazioneTerrenoStep)
 //				.next(createDatiTerrenoStep)
 //				.next(createDatiProduzioneStep)
 				.build();
@@ -143,7 +136,7 @@ public class AgrifluxJobsConfiguration {
 		return new StepBuilder("createDatiColturaStep", jobRepository).<DatiParticellaRecordReduce, List<DatiColturaRecord>>chunk(10, transactionManager)
 					.reader(datiParticellaCustomItemReader)
 					.processor(datiColturaCustomProcessor)
-					.writer(appiattisciRecordListItemWriter(datiColturaDataTableWriter))
+					.writer(appiattisciColturaRecordListItemWriter(datiColturaDataTableWriter))
 					.build();
 	}
 	
@@ -176,7 +169,7 @@ public class AgrifluxJobsConfiguration {
 	}
 	
 	@Bean
-	ItemWriter<List<DatiColturaRecord>> appiattisciRecordListItemWriter(JdbcBatchItemWriter<DatiColturaRecord> jdbcItemWriter) {
+	ItemWriter<List<DatiColturaRecord>> appiattisciColturaRecordListItemWriter(JdbcBatchItemWriter<DatiColturaRecord> jdbcItemWriter) {
 	    return items -> {
 	        List<DatiColturaRecord> listaAppiattita = items.getItems().stream()
 	            .flatMap(Collection::stream)
@@ -194,6 +187,70 @@ public class AgrifluxJobsConfiguration {
 
 
 	//TERZO STEP
+	
+	@Bean
+	Step createDatiRilevazioneTerrenoStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiRilevazioneTerrenoMetadata> datiRilevazioneTerrenoItemReader,
+			ItemProcessor<DatiRilevazioneTerrenoMetadata, List<DatiRilevazioneTerrenoRecord>> datiRilevazioneTerrenoCustomProcessor,
+			JdbcBatchItemWriter<DatiRilevazioneTerrenoRecord> datiRilevazioneTerrenoDataTableWriter) {
+		return new StepBuilder("createDatiRilevazioneTerrenoStep", jobRepository).<DatiRilevazioneTerrenoMetadata, List<DatiRilevazioneTerrenoRecord>>chunk(10, transactionManager)
+				.reader(datiRilevazioneTerrenoItemReader)
+				.processor(datiRilevazioneTerrenoCustomProcessor)
+				.writer(appiattisciRilevazioneTerrenoRecordListItemWriter(datiRilevazioneTerrenoDataTableWriter))
+				.build();
+	}
+	
+	@Bean
+	@StepScope
+	FlatFileItemReader<DatiRilevazioneTerrenoMetadata> datiRilevazioneTerrenoItemReader(){
+		return new FlatFileItemReaderBuilder<DatiRilevazioneTerrenoMetadata>()
+				.name("datiTerrenoItemReader")
+				.resource(new FileSystemResource("src/main/resources/dati-rilevazione-terreno-metadata.txt"))
+				.delimited()
+				.names("phSuolo", "umidita", "capacitaAssorbente", "porosita", "temperatura")
+				.fieldSetMapper(new DatiTerrenoFieldSetMapper())
+				.build();
+	}
+	
+	@Bean
+	DatiRilevazioneTerrenoCustomProcessor datiRilevazioneTerrenoCustomProcessor() {
+		return new DatiRilevazioneTerrenoCustomProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiRilevazioneTerrenoRecord> datiRilevazioneTerrenoDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_RILEVAZIONE_TERRENO (PH_SUOLO, UMIDITA, CAPACITA_ASSORBENTE, POROSITA, TEMPERATURA,
+				 	DATA_RILEVAZIONE, ID_PARTICELLA)
+				VALUES (:phSuolo, :umidita, :capacitaAssorbente, :porosita, :temperatura,
+					:dataRilevazione, :idParticella)
+				""";
+	    return new JdbcBatchItemWriterBuilder<DatiRilevazioneTerrenoRecord>()
+	            .dataSource(dataSource)
+	            .sql(sql)
+	            .beanMapped()
+	            .build();
+	}
+	
+	@Bean
+	ItemWriter<List<DatiRilevazioneTerrenoRecord>> appiattisciRilevazioneTerrenoRecordListItemWriter(JdbcBatchItemWriter<DatiRilevazioneTerrenoRecord> jdbcItemWriter) {
+	    return items -> {
+	        List<DatiRilevazioneTerrenoRecord> listaAppiattita = items.getItems().stream()
+	            .flatMap(Collection::stream)
+	            .collect(Collectors.toList());
+
+	        /*
+	         * Dato che Spring Batch non gestisce in scrittura una lista di oggetti ma un Chunk,
+	         * ne creo uno manuale ad hoc.
+	         */
+	        Chunk<DatiRilevazioneTerrenoRecord> chunk = new Chunk<>(listaAppiattita);
+
+	        jdbcItemWriter.write(chunk);
+	    };
+	}
+	
+	//QUARTO STEP
 	
 	@Bean
 	Step createDatiAmbientaliStep(JobRepository jobRepository, 
@@ -241,57 +298,6 @@ public class AgrifluxJobsConfiguration {
 	            .build();
 	}
 	
-	//TERZO STEP
-	
-	
-	
-	//QUARTO STEP
-	
-	@Bean
-	Step createDatiTerrenoStep(JobRepository jobRepository, 
-			JdbcTransactionManager transactionManager,
-			ItemReader<DatiTerrenoMetadata> datiTerrenoItemReader,
-			ItemProcessor<DatiTerrenoMetadata, DatiTerrenoRecord> datiTerrenoErnicherProcessor,
-			ItemWriter<DatiTerrenoRecord> datiTerrenoDataTableWriter) {
-		return new StepBuilder("createDatiTerrenoStep", jobRepository).<DatiTerrenoMetadata, DatiTerrenoRecord>chunk(10, transactionManager)
-				.reader(datiTerrenoItemReader)
-				.processor(datiTerrenoErnicherProcessor)
-				.writer(datiTerrenoDataTableWriter)
-				.build();
-	}
-	
-	@Bean
-	@StepScope
-	FlatFileItemReader<DatiTerrenoMetadata> datiTerrenoItemReader(){
-		return new FlatFileItemReaderBuilder<DatiTerrenoMetadata>()
-				.name("datiTerrenoItemReader")
-				.resource(new FileSystemResource("src/main/resources/dati-terreno-metadata.txt"))
-				.delimited()
-				.names("phSuolo", "umidita", "capacitaAssorbente", "porosita", "temperatura", 
-						"disponibilitaIrrigua", "dataRilevazione", "idColtura", "idMorfologia")
-				.fieldSetMapper(new DatiTerrenoFieldSetMapper())
-				.build();
-	}
-	
-	@Bean
-	DatiTerrenoEnricherProcessor datiTerrenoErnicherProcessor() {
-		return new DatiTerrenoEnricherProcessor();
-	}
-	
-	@Bean
-	JdbcBatchItemWriter<DatiTerrenoRecord> datiTerrenoDataTableWriter(DataSource dataSource) {
-		String sql = """
-				INSERT INTO DATI_TERRENO (PH_SUOLO, UMIDITA, CAPACITA_ASSORBENTE, POROSITA, TEMPERATURA, 
-					DISPONIBILITA_IRRIGUA, DATA_RILEVAZIONE, ID_COLTURA, ID_MORFOLOGIA)
-				VALUES (:phSuolo, :umidita, :capacitaAssorbente, :porosita, :temperatura, :disponibilitaIrrigua,
-					:dataRilevazione, :idColtura, :idMorfologia)
-				""";
-	    return new JdbcBatchItemWriterBuilder<DatiTerrenoRecord>()
-	            .dataSource(dataSource)
-	            .sql(sql)
-	            .beanMapped()
-	            .build();
-	}
 	
 	//TODO QUINTO STEP
 	

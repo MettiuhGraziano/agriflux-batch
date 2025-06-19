@@ -1,8 +1,6 @@
 package com.agriflux.agrifluxbatch.repository.projection;
 
-import java.io.Serializable;
-
-public interface ProduzioneJoinColturaTempiProjection extends Serializable {
+public interface ProduzioneJoinColturaTempiProjection {
 
 	String getProdottoColtivato();
 	String getAnnoSemina();

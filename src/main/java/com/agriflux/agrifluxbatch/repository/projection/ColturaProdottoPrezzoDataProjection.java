@@ -1,10 +1,9 @@
 package com.agriflux.agrifluxbatch.repository.projection;
 
-import java.io.Serializable;
 import java.math.BigDecimal;
 import java.util.Date;
 
-public interface ColturaProdottoPrezzoDataProjection extends Serializable{
+public interface ColturaProdottoPrezzoDataProjection {
 	
 	String getProdottoColtivato();
 	BigDecimal getPrezzoKg();

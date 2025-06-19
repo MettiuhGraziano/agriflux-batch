@@ -25,13 +25,11 @@ public class Terreno {
 	private BigDecimal porosita;
 	private BigDecimal temperatura;
 	
-	private int disponibilitaIrrigua;
-	
 	private LocalDateTime dataRilevazione;
 	
 	@ManyToOne
-    @JoinColumn(name = "ID_COLTURA")
-	private Coltura coltura;
+    @JoinColumn(name = "ID_PARTICELLA")
+	private Particella particella;
 	
 	public long getIdRilevazioneTerreno() {
 		return idRilevazioneTerreno;
@@ -81,14 +79,6 @@ public class Terreno {
 		this.temperatura = temperatura;
 	}
 	
-	public int getDisponibilitaIrrigua() {
-		return disponibilitaIrrigua;
-	}
-	
-	public void setDisponibilitaIrrigua(int disponibilitaIrrigua) {
-		this.disponibilitaIrrigua = disponibilitaIrrigua;
-	}
-	
 	public LocalDateTime getDataRilevazione() {
 		return dataRilevazione;
 	}
@@ -97,12 +87,12 @@ public class Terreno {
 		this.dataRilevazione = dataRilevazione;
 	}
 	
-	public Coltura getColtura() {
-		return coltura;
+	public Particella getParticella() {
+		return particella;
 	}
 
-	public void setColtura(Coltura coltura) {
-		this.coltura = coltura;
+	public void setColtura(Particella particella) {
+		this.particella = particella;
 	}
 	
 }

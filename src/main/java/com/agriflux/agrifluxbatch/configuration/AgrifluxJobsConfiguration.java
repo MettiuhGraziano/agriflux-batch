@@ -32,18 +32,19 @@ import org.springframework.jdbc.support.JdbcTransactionManager;
 
 import com.agriflux.agrifluxbatch.job.particella.DatiParticellaRowMapper;
 import com.agriflux.agrifluxbatch.job.produzione.DatiProduzioneRowMapper;
+import com.agriflux.agrifluxbatch.job.stagione.DatiStagioneRowMapper;
 import com.agriflux.agrifluxbatch.job.terreno.DatiTerrenoFieldSetMapper;
-import com.agriflux.agrifluxbatch.model.DatiAmbientaliMetadata;
-import com.agriflux.agrifluxbatch.model.DatiAmbientaliRecord;
+import com.agriflux.agrifluxbatch.model.ambiente.DatiAmbienteRecord;
 import com.agriflux.agrifluxbatch.model.coltura.DatiColturaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaMetadata;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecordReduce;
 import com.agriflux.agrifluxbatch.model.produzione.DatiColturaJoinParticellaRecord;
 import com.agriflux.agrifluxbatch.model.produzione.DatiProduzioneRecord;
+import com.agriflux.agrifluxbatch.model.stagione.DatiStagioneRecord;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoMetadata;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoRecord;
-import com.agriflux.agrifluxbatch.processor.DatiAmbientaliEnricherProcessor;
+import com.agriflux.agrifluxbatch.processor.DatiAmbienteCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.coltura.DatiColturaCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.particella.DatiParticellaCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.produzione.DatiProduzioneCustomProcessor;
@@ -70,13 +71,13 @@ public class AgrifluxJobsConfiguration {
 	
 	@Bean
 	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createDatiColturaStep,
-			Step createDatiRilevazioneTerrenoStep, Step createDatiProduzioneStep) {
+			Step createDatiRilevazioneTerrenoStep, Step createDatiProduzioneStep, Step createDatiAmbienteStep) {
 		return new JobBuilder("simulationJob", jobRepository)
 				.start(createDatiParticellaStep)
 				.next(createDatiColturaStep)
 				.next(createDatiRilevazioneTerrenoStep)
 				.next(createDatiProduzioneStep)
-//				.next(createDatiTerrenoStep)
+				.next(createDatiAmbienteStep)
 				.build();
 	}
 	
@@ -299,52 +300,70 @@ public class AgrifluxJobsConfiguration {
 				.build();
 	}
 	
-	//TODO QUINTO STEP
+	//QUINTO STEP
 	
 	@Bean
-	Step createDatiAmbientaliStep(JobRepository jobRepository, 
+	Step createDatiAmbienteStep(JobRepository jobRepository, 
 			JdbcTransactionManager transactionManager,
-			ItemReader<DatiAmbientaliMetadata> datiAmbientaliItemReader,
-			ItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter,
-			ItemProcessor<DatiAmbientaliMetadata, DatiAmbientaliRecord> datiAmbientaliEnricherProcessor) {
-		return new StepBuilder("createDatiAmbientaliStep", jobRepository).<DatiAmbientaliMetadata, DatiAmbientaliRecord>chunk(10, transactionManager)
-				.reader(datiAmbientaliItemReader)
-				.processor(datiAmbientaliEnricherProcessor)
-				.writer(datiAmbientaliDataTableWriter)
+			ItemReader<DatiStagioneRecord> datiStagioneItemReader,
+			ItemProcessor<DatiStagioneRecord, List<DatiAmbienteRecord>> datiAmbienteCustomProcessor,
+			JdbcBatchItemWriter<DatiAmbienteRecord> datiAmbientaliDataTableWriter) {
+		return new StepBuilder("createDatiAmbienteStep", jobRepository).<DatiStagioneRecord, List<DatiAmbienteRecord>>chunk(10, transactionManager)
+				.reader(datiStagioneItemReader)
+				.processor(datiAmbienteCustomProcessor)
+				.writer(appiattisciAmbienteRecordListItemWriter(datiAmbientaliDataTableWriter))
 				.build();
 	}
 	
 	@Bean
-	@StepScope
-	FlatFileItemReader<DatiAmbientaliMetadata> datiAmbientaliItemReader() {
-		return new FlatFileItemReaderBuilder<DatiAmbientaliMetadata>()
-				.name("datiAmbientaliItemReader")
-				.resource(new FileSystemResource("src/main/resources/dati-ambientali-metadata.txt"))
-				.delimited()
-				.names("temperaturaMedia", "umiditaMedia", "precipitazioni", "irraggiamentoMedio",
-						"ombreggiamentoMedio", "dataRilevazione", "idColtura")
-				.targetType(DatiAmbientaliMetadata.class)
+	JdbcCursorItemReader<DatiStagioneRecord> datiStagioneItemReader() {
+		return new JdbcCursorItemReaderBuilder<DatiStagioneRecord>()
+				.dataSource(batchDataSource())
+				.name("datiStagioneItemReader")
+				.sql("SELECT NOME, MESE_GIORNO_INIZIO, MESE_GIORNO_FINE, RANGE_TEMPERATURA, "
+						+ "RANGE_UMIDITA, RANGE_PRECIPITAZIONI, RANGE_IRRAGGIAMENTO, "
+						+ "RANGE_OMBREGGIAMENTO FROM DATI_STAGIONE")
+				.rowMapper(new DatiStagioneRowMapper())
 				.build();
 	}
 	
 	@Bean
-	DatiAmbientaliEnricherProcessor datiAmbientaliEnricherProcessor(){
-		return new DatiAmbientaliEnricherProcessor();
+	DatiAmbienteCustomProcessor datiAmbienteCustomProcessor(){
+		return new DatiAmbienteCustomProcessor();
 	}
 	
 	@Bean
-	JdbcBatchItemWriter<DatiAmbientaliRecord> datiAmbientaliDataTableWriter(DataSource dataSource) {
+	JdbcBatchItemWriter<DatiAmbienteRecord> datiAmbientaliDataTableWriter(DataSource dataSource) {
 		String sql = """
-				INSERT INTO DATI_AMBIENTALI (TEMPERATURA_MEDIA, UMIDITA_MEDIA, PRECIPITAZIONI, 
-						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, DATA_RILEVAZIONE, ID_COLTURA)
+				INSERT INTO DATI_AMBIENTE (TEMPERATURA_MEDIA, UMIDITA_MEDIA, PRECIPITAZIONI, 
+						IRRAGGIAMENTO_MEDIO, OMBREGGIAMENTO_MEDIO, DATA_RILEVAZIONE)
 				VALUES (:temperaturaMedia, :umiditaMedia, :precipitazioni, :irraggiamentoMedio, 
-						:ombreggiamentoMedio, :dataRilevazione, :idColtura)
+						:ombreggiamentoMedio, :dataRilevazione)
 				""";
-		return new JdbcBatchItemWriterBuilder<DatiAmbientaliRecord>()
+		return new JdbcBatchItemWriterBuilder<DatiAmbienteRecord>()
 				.dataSource(dataSource)
 				.sql(sql)
 				.beanMapped()
 				.build();
 	}
+	
+	@Bean
+	ItemWriter<List<DatiAmbienteRecord>> appiattisciAmbienteRecordListItemWriter(JdbcBatchItemWriter<DatiAmbienteRecord> jdbcItemWriter) {
+	    return items -> {
+	        List<DatiAmbienteRecord> listaAppiattita = items.getItems().stream()
+	            .flatMap(Collection::stream)
+	            .collect(Collectors.toList());
+
+	        /*
+	         * Dato che Spring Batch non gestisce in scrittura una lista di oggetti ma un Chunk,
+	         * ne creo uno manuale ad hoc.
+	         */
+	        Chunk<DatiAmbienteRecord> chunk = new Chunk<>(listaAppiattita);
+
+	        jdbcItemWriter.write(chunk);
+	    };
+	}
+	
+	//TODO SESTO STEP
 	
 }

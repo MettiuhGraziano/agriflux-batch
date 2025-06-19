@@ -36,8 +36,8 @@ public class Ortaggio {
 	private Famiglia famiglia;
 	
 	@OneToOne
-    @JoinColumn(name = "ID_RANGE_STAGIONE")
-	private RangeStagione rangeStagione;
+    @JoinColumn(name = "ID_RANGE_STAGIONE_SEMINA")
+	private RangeStagioneSemina rangeStagioneSemina;
 	
 	@OneToMany
 	private List<Coltura> colture;
@@ -138,12 +138,12 @@ public class Ortaggio {
 		this.famiglia = famiglia;
 	}
 
-	public RangeStagione getRangeStagione() {
-		return rangeStagione;
+	public RangeStagioneSemina getRangeStagioneSemina() {
+		return rangeStagioneSemina;
 	}
 
-	public void setRangeStagione(RangeStagione rangeStagione) {
-		this.rangeStagione = rangeStagione;
+	public void setRangeStagioneSemina(RangeStagioneSemina rangeStagioneSemina) {
+		this.rangeStagioneSemina = rangeStagioneSemina;
 	}
 	
 }

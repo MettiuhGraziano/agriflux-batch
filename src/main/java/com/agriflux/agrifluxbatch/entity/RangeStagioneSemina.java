@@ -7,23 +7,23 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "DATI_RANGE_STAGIONE")
-public class RangeStagione {
+@Table(name = "DATI_RANGE_STAGIONE_SEMINA")
+public class RangeStagioneSemina {
 	
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
-	private long idRangeStagione;
+	private long idRangeStagioneSemina;
 	
 	private String meseSeminaMin;
 	private String meseSeminaMax;
 	private String stagione;
 	
-	public long getIdRangeStagione() {
-		return idRangeStagione;
+	public long getIdRangeStagioneSemina() {
+		return idRangeStagioneSemina;
 	}
 	
-	public void setIdRangeStagione(long idRangeStagione) {
-		this.idRangeStagione = idRangeStagione;
+	public void setIdRangeStagioneSemina(long idRangeStagioneSemina) {
+		this.idRangeStagioneSemina = idRangeStagioneSemina;
 	}
 	
 	public String getMeseSeminaMin() {

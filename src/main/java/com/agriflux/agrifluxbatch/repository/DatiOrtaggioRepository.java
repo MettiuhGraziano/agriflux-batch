@@ -17,7 +17,7 @@ public interface DatiOrtaggioRepository extends CrudRepository<Ortaggio, Long>, 
 			+ "o.giorniGerminazione AS giorniGerminazione, o.giorniTrapianto AS giorniTrapianto, "
 			+ "o.giorniMaturazione AS giorniMaturazione, o.giorniRaccolta AS giorniRaccolta, "
 			+ "o.pesoMedio AS pesoMedio, o.volumeMq AS volumeMq, r.meseSeminaMin AS meseSeminaMin, "
-			+ "r.meseSeminaMax AS meseSeminaMax FROM Ortaggio o JOIN o.rangeStagione r")
+			+ "r.meseSeminaMax AS meseSeminaMax FROM Ortaggio o JOIN o.rangeStagioneSemina r")
 	List<OrtaggioRangeStagioneProjection> findAllOrtaggioRangeStagioneProjection();
 	
 }

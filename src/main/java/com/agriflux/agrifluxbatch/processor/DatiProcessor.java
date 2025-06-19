@@ -108,7 +108,7 @@ public class DatiProcessor {
 	
 	protected LocalDateTime generaDataRandomFromRange(LocalDateTime dataMin, LocalDateTime dataMax) {
 		long giorniInclusi = ChronoUnit.DAYS.between(dataMin, dataMax);
-        long giornateRandom = random.nextInt((int) giorniInclusi + 1);
+        long giornateRandom = random.nextInt((int) Math.abs(giorniInclusi) + 1);
         
         return dataMin.plusDays(giornateRandom);
 	}

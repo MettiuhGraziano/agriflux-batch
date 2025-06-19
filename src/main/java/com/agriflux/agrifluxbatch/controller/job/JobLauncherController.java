@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.controller;
+package com.agriflux.agrifluxbatch.controller.job;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

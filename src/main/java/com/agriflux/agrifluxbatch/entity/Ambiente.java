@@ -7,8 +7,6 @@ import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
 import jakarta.persistence.Table;
 
 @Entity
@@ -26,10 +24,6 @@ public class Ambiente {
 	private BigDecimal ombreggiamentoMedio;
 	
 	private LocalDateTime dataRilevazione;
-	
-	@OneToOne
-    @JoinColumn(name = "ID_COLTURA")
-	private Coltura coltura;
 	
 	public long getIdAmbiente() {
 		return idAmbiente;
@@ -85,14 +79,6 @@ public class Ambiente {
 	
 	public void setDataRilevazione(LocalDateTime dataRilevazione) {
 		this.dataRilevazione = dataRilevazione;
-	}
-	
-	public Coltura getColtura() {
-		return coltura;
-	}
-
-	public void setColtura(Coltura coltura) {
-		this.coltura = coltura;
 	}
 	
 }

@@ -8,12 +8,15 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.agriflux.agrifluxbatch.entity.Produzione;
-import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaProjection;
-import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
-import com.agriflux.agrifluxbatch.repository.projection.ProduzioneMorfologiaColturaProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaFatturatoProjection;
 
 @Repository
 public interface DatiProduzioneRepository extends CrudRepository<Produzione, Long>, PagingAndSortingRepository<Produzione, Long> {
+	
+	@Query("SELECT p.fatturatoRaccolto AS fatturatoRaccolto, p.speseProduzione AS speseProduzione, "
+			+ "c.particella.idParticella AS idParticella, YEAR(c.dataRaccolto) AS annoRaccolto "
+			+ "FROM Produzione p JOIN p.coltura c")
+	List<ProduzioneJoinColturaFatturatoProjection> findProduzioneJoinColturaFatturatoProjection();
 	
 //	@Query("SELECT c.prodottoColtivato AS prodottoColtivato, " + "YEAR(c.dataRaccolto) AS annoRaccolto, "
 //			+ "p.quantitaRaccolto AS quantitaRaccolto, " + "p.quantitaRaccoltoVenduto AS quantitaRaccoltoVenduto, "

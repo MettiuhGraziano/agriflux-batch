@@ -5,13 +5,28 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.springframework.batch.core.annotation.BeforeProcess;
 import org.springframework.batch.item.ItemProcessor;
 
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoMetadata;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoRecord;
 import com.agriflux.agrifluxbatch.processor.DatiProcessor;
+import com.agriflux.agrifluxshared.dto.particella.DatiParticellaDTO;
 
 public class DatiRilevazioneTerrenoCustomProcessor extends DatiProcessor implements ItemProcessor<DatiRilevazioneTerrenoMetadata, List<DatiRilevazioneTerrenoRecord>>{
+	
+	@BeforeProcess
+	public void init() {
+		if (cacheParticella.isEmpty()) {
+			List<DatiParticellaDTO> particellaDtoList = particellaService.findAllParticellaIdAnno();
+			
+			if (null != particellaDtoList && !particellaDtoList.isEmpty()) {
+				for (DatiParticellaDTO datiParticellaDTO : particellaDtoList) {
+					cacheParticella.put(datiParticellaDTO.getIdParticella(), datiParticellaDTO);
+				}
+			}
+		}
+	}
 	
 	@Override
 	public List<DatiRilevazioneTerrenoRecord> process(DatiRilevazioneTerrenoMetadata item) throws Exception {
@@ -20,10 +35,10 @@ public class DatiRilevazioneTerrenoCustomProcessor extends DatiProcessor impleme
 		
 		LocalDateTime dataOdierna = LocalDateTime.now();
 		
-		if (null != getCacheParticella() && !getCacheParticella().isEmpty()) {
-			for (Long idParticella : getCacheParticella().keySet()) {
+		if (null != cacheParticella && !cacheParticella.isEmpty()) {
+			for (Long idParticella : cacheParticella.keySet()) {
 				
-				int annoInstallazione = Integer.parseInt(getCacheParticella().get(idParticella).getAnnoInstallazione());
+				int annoInstallazione = Integer.parseInt(cacheParticella.get(idParticella).getAnnoInstallazione());
 				int annoAttuale = dataOdierna.getYear();
 				
 				while (annoInstallazione <= annoAttuale) {

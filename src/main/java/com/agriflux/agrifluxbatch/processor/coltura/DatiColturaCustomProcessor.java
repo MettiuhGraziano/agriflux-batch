@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import org.springframework.batch.core.annotation.BeforeProcess;
 import org.springframework.batch.item.ItemProcessor;
 
 import com.agriflux.agrifluxbatch.model.coltura.DatiColturaRecord;
@@ -20,12 +21,25 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 	
 	private boolean counterParticella = false;
 	
+	@BeforeProcess
+	public void init() {
+		if (cacheOrtaggio.isEmpty()) {
+			List<OrtaggioRangeStagioneSumDTO> ortaggioDtoList = ortaggioService.findAllOrtaggioRangeStagione();
+
+			if (null != ortaggioDtoList && !ortaggioDtoList.isEmpty()) {
+				for (OrtaggioRangeStagioneSumDTO ortaggioDTO : ortaggioDtoList) {
+					cacheOrtaggio.put(ortaggioDTO.getIdOrtaggio(), ortaggioDTO);
+				}
+			}
+		}
+	}
+	
 	@Override
 	public List<DatiColturaRecord> process(DatiParticellaRecordReduce item) throws Exception {
 		
 		List<DatiColturaRecord> response = new ArrayList<DatiColturaRecord>();
 		
-		if (!getCacheOrtaggio().isEmpty()) {
+		if (!cacheOrtaggio.isEmpty()) {
 			while (!counterParticella) {
 
 				if (null != cacheDateParticella.get(item.idParticella()) && !cacheDateParticella.isEmpty()) {
@@ -46,9 +60,9 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 
 	private void generateColtura(DatiParticellaRecordReduce item, List<DatiColturaRecord> response) {
 
-		if (!getCacheOrtaggio().isEmpty()) {
-			long idOrtaggio = generaRandomIntFromRange(1, getCacheOrtaggio().keySet().size() + 1);
-			OrtaggioRangeStagioneSumDTO ortaggio = getCacheOrtaggio().get(idOrtaggio);
+		if (!cacheOrtaggio.isEmpty()) {
+			long idOrtaggio = generaRandomIntFromRange(1, cacheOrtaggio.keySet().size() + 1);
+			OrtaggioRangeStagioneSumDTO ortaggio = cacheOrtaggio.get(idOrtaggio);
 
 			int meseSeminaMin = Integer.parseInt(ortaggio.getMeseSeminaMin());
 			int meseSeminaMax = Integer.parseInt(ortaggio.getMeseSeminaMax());
@@ -58,8 +72,8 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 			int mese = dataUltimoRaccolto.getMonthValue();
 
 			while (!(mese >= meseSeminaMin && mese <= meseSeminaMax)) {
-				idOrtaggio = generaRandomIntFromRange(1, getCacheOrtaggio().keySet().size() + 1);
-				ortaggio = getCacheOrtaggio().get(idOrtaggio);
+				idOrtaggio = generaRandomIntFromRange(1, cacheOrtaggio.keySet().size() + 1);
+				ortaggio = cacheOrtaggio.get(idOrtaggio);
 				meseSeminaMin = Integer.parseInt(ortaggio.getMeseSeminaMin());
 				meseSeminaMax = Integer.parseInt(ortaggio.getMeseSeminaMax());
 			}

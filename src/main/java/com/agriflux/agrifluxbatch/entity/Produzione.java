@@ -20,108 +20,82 @@ public class Produzione {
 	
 	private BigDecimal quantitaRaccolto;
 	private BigDecimal quantitaRaccoltoVenduto;
-	private BigDecimal fatturatoColtura;
-	private BigDecimal speseAccessorie;
+	private BigDecimal quantitaRaccoltoMarcio;
+	private BigDecimal quantitaRaccoltoTerzi;
+	private BigDecimal fatturatoRaccolto;
 	
 	private int numLavoratori;
-	private int tempoSemina; 
-	private int tempoGerminazione;
-	private int tempoTrapianto;
-	private int tempoMaturazione;
-	private int tempoRaccolta; 
+	
+	private BigDecimal speseProduzione;
 	
 	@OneToOne
     @JoinColumn(name = "ID_COLTURA")
     private Coltura coltura;
-	
+
 	public long getIdProduzione() {
 		return idProduzione;
 	}
-	
+
 	public void setIdProduzione(long idProduzione) {
 		this.idProduzione = idProduzione;
 	}
-	
+
 	public BigDecimal getQuantitaRaccolto() {
 		return quantitaRaccolto;
 	}
-	
+
 	public void setQuantitaRaccolto(BigDecimal quantitaRaccolto) {
 		this.quantitaRaccolto = quantitaRaccolto;
 	}
-	
+
 	public BigDecimal getQuantitaRaccoltoVenduto() {
 		return quantitaRaccoltoVenduto;
 	}
-	
+
 	public void setQuantitaRaccoltoVenduto(BigDecimal quantitaRaccoltoVenduto) {
 		this.quantitaRaccoltoVenduto = quantitaRaccoltoVenduto;
 	}
-	
-	public BigDecimal getFatturatoColtura() {
-		return fatturatoColtura;
+
+	public BigDecimal getQuantitaRaccoltoMarcio() {
+		return quantitaRaccoltoMarcio;
 	}
-	
-	public void setFatturatoColtura(BigDecimal fatturatoColtura) {
-		this.fatturatoColtura = fatturatoColtura;
+
+	public void setQuantitaRaccoltoMarcio(BigDecimal quantitaRaccoltoMarcio) {
+		this.quantitaRaccoltoMarcio = quantitaRaccoltoMarcio;
 	}
-	
-	public BigDecimal getSpeseAccessorie() {
-		return speseAccessorie;
+
+	public BigDecimal getQuantitaRaccoltoTerzi() {
+		return quantitaRaccoltoTerzi;
 	}
-	
-	public void setSpeseAccessorie(BigDecimal speseAccessorie) {
-		this.speseAccessorie = speseAccessorie;
+
+	public void setQuantitaRaccoltoTerzi(BigDecimal quantitaRaccoltoTerzi) {
+		this.quantitaRaccoltoTerzi = quantitaRaccoltoTerzi;
 	}
-	
+
+	public BigDecimal getFatturatoRaccolto() {
+		return fatturatoRaccolto;
+	}
+
+	public void setFatturatoRaccolto(BigDecimal fatturatoRaccolto) {
+		this.fatturatoRaccolto = fatturatoRaccolto;
+	}
+
 	public int getNumLavoratori() {
 		return numLavoratori;
 	}
-	
+
 	public void setNumLavoratori(int numLavoratori) {
 		this.numLavoratori = numLavoratori;
 	}
-	
-	public int getTempoSemina() {
-		return tempoSemina;
+
+	public BigDecimal getSpeseProduzione() {
+		return speseProduzione;
 	}
-	
-	public void setTempoSemina(int tempoSemina) {
-		this.tempoSemina = tempoSemina;
+
+	public void setSpeseProduzione(BigDecimal speseProduzione) {
+		this.speseProduzione = speseProduzione;
 	}
-	
-	public int getTempoGerminazione() {
-		return tempoGerminazione;
-	}
-	
-	public void setTempoGerminazione(int tempoGerminazione) {
-		this.tempoGerminazione = tempoGerminazione;
-	}
-	
-	public int getTempoTrapianto() {
-		return tempoTrapianto;
-	}
-	
-	public void setTempoTrapianto(int tempoTrapianto) {
-		this.tempoTrapianto = tempoTrapianto;
-	}
-	
-	public int getTempoMaturazione() {
-		return tempoMaturazione;
-	}
-	
-	public void setTempoMaturazione(int tempoMaturazione) {
-		this.tempoMaturazione = tempoMaturazione;
-	}
-	
-	public int getTempoRaccolta() {
-		return tempoRaccolta;
-	}
-	
-	public void setTempoRaccolta(int tempoRaccolta) {
-		this.tempoRaccolta = tempoRaccolta;
-	}
-	
+
 	public Coltura getColtura() {
 		return coltura;
 	}

@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.processor;
+package com.agriflux.agrifluxbatch.processor.ambiente;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;
@@ -9,16 +9,16 @@ import org.springframework.batch.item.ItemProcessor;
 
 import com.agriflux.agrifluxbatch.model.ambiente.DatiAmbienteRecord;
 import com.agriflux.agrifluxbatch.model.stagione.DatiStagioneRecord;
+import com.agriflux.agrifluxbatch.processor.DatiProcessor;
 
-public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemProcessor<DatiStagioneRecord, List<DatiAmbienteRecord>>{
+public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemProcessor<DatiStagioneRecord, List<DatiAmbienteRecord>> {
 	
 	@Override
 	public List<DatiAmbienteRecord> process(DatiStagioneRecord datiStagioneRecord) throws Exception {
 			
 		List<DatiAmbienteRecord> response = new ArrayList<DatiAmbienteRecord>();
 		
-		@SuppressWarnings("unlikely-arg-type")
-		int counterAnnoRilevazione = Integer.parseInt(getCacheParticella().get(1L).getAnnoInstallazione());
+		int counterAnnoRilevazione = Integer.parseInt(cacheParticella.get(1L).getAnnoInstallazione());
 		
 		String meseGiornoInizio = datiStagioneRecord.meseGiornoInizio();
 		int delimiterIndex = meseGiornoInizio.indexOf("-");

@@ -30,12 +30,15 @@ import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType;
 import org.springframework.jdbc.support.JdbcTransactionManager;
 
+import com.agriflux.agrifluxbatch.job.particella.DatiParticellaFatturatoRowMapper;
 import com.agriflux.agrifluxbatch.job.particella.DatiParticellaRowMapper;
 import com.agriflux.agrifluxbatch.job.produzione.DatiProduzioneRowMapper;
 import com.agriflux.agrifluxbatch.job.stagione.DatiStagioneRowMapper;
 import com.agriflux.agrifluxbatch.job.terreno.DatiTerrenoFieldSetMapper;
 import com.agriflux.agrifluxbatch.model.ambiente.DatiAmbienteRecord;
 import com.agriflux.agrifluxbatch.model.coltura.DatiColturaRecord;
+import com.agriflux.agrifluxbatch.model.fatturato.DatiFatturatoRecord;
+import com.agriflux.agrifluxbatch.model.particella.DatiParticellaFatturatoRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaMetadata;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecord;
 import com.agriflux.agrifluxbatch.model.particella.DatiParticellaRecordReduce;
@@ -44,8 +47,9 @@ import com.agriflux.agrifluxbatch.model.produzione.DatiProduzioneRecord;
 import com.agriflux.agrifluxbatch.model.stagione.DatiStagioneRecord;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoMetadata;
 import com.agriflux.agrifluxbatch.model.terreno.DatiRilevazioneTerrenoRecord;
-import com.agriflux.agrifluxbatch.processor.DatiAmbienteCustomProcessor;
+import com.agriflux.agrifluxbatch.processor.ambiente.DatiAmbienteCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.coltura.DatiColturaCustomProcessor;
+import com.agriflux.agrifluxbatch.processor.fatturato.DatiFatturatoCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.particella.DatiParticellaCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.produzione.DatiProduzioneCustomProcessor;
 import com.agriflux.agrifluxbatch.processor.terreno.DatiRilevazioneTerrenoCustomProcessor;
@@ -71,13 +75,15 @@ public class AgrifluxJobsConfiguration {
 	
 	@Bean
 	Job simulationJob(JobRepository jobRepository, Step createDatiParticellaStep, Step createDatiColturaStep,
-			Step createDatiRilevazioneTerrenoStep, Step createDatiProduzioneStep, Step createDatiAmbienteStep) {
+			Step createDatiRilevazioneTerrenoStep, Step createDatiProduzioneStep, Step createDatiAmbienteStep,
+			Step createDatiFatturatoStep) {
 		return new JobBuilder("simulationJob", jobRepository)
 				.start(createDatiParticellaStep)
 				.next(createDatiColturaStep)
 				.next(createDatiRilevazioneTerrenoStep)
 				.next(createDatiProduzioneStep)
 				.next(createDatiAmbienteStep)
+				.next(createDatiFatturatoStep)
 				.build();
 	}
 	
@@ -365,5 +371,65 @@ public class AgrifluxJobsConfiguration {
 	}
 	
 	//TODO SESTO STEP
+	
+	@Bean
+	Step createDatiFatturatoStep(JobRepository jobRepository, 
+			JdbcTransactionManager transactionManager,
+			ItemReader<DatiParticellaFatturatoRecord> datiParticellaFatturatoCustomItemReader,
+			ItemProcessor<DatiParticellaFatturatoRecord, List<DatiFatturatoRecord>> datiFatturatoCustomProcessor,
+			JdbcBatchItemWriter<DatiFatturatoRecord> datiFatturatoDataTableWriter) {
+		return new StepBuilder("createDatiFatturatoStep", jobRepository).<DatiParticellaFatturatoRecord, List<DatiFatturatoRecord>>chunk(10, transactionManager)
+				.reader(datiParticellaFatturatoCustomItemReader)
+				.processor(datiFatturatoCustomProcessor)
+				.writer(appiattisciFatturatoRecordListItemWriter(datiFatturatoDataTableWriter))
+				.build();
+	}
+	
+	@Bean
+	JdbcCursorItemReader<DatiParticellaFatturatoRecord> datiParticellaFatturatoCustomItemReader() {
+		return new JdbcCursorItemReaderBuilder<DatiParticellaFatturatoRecord>()
+				.dataSource(batchDataSource())
+				.name("datiParticellaFatturatoCustomItemReader")
+				.sql("SELECT ID_PARTICELLA, ANNO_INSTALLAZIONE, COSTO FROM DATI_PARTICELLA")
+				.rowMapper(new DatiParticellaFatturatoRowMapper())
+				.build();
+	}
+	
+	@Bean
+	DatiFatturatoCustomProcessor datiFatturatoCustomProcessor(){
+		return new DatiFatturatoCustomProcessor();
+	}
+	
+	@Bean
+	JdbcBatchItemWriter<DatiFatturatoRecord> datiFatturatoDataTableWriter(DataSource dataSource) {
+		String sql = """
+				INSERT INTO DATI_FATTURATO (ANNO_RIFERIMENTO, RICAVI_VENDITA, SPESE_GENERALI, 
+						INTERESSI_ATTIVI, INTERESSI_PASSIVI, ID_PARTICELLA)
+				VALUES (:annoRiferimento, :ricaviVendita, :speseGenerali, :interessiAttivi, 
+						:interessiPassivi, :idParticella)
+				""";
+		return new JdbcBatchItemWriterBuilder<DatiFatturatoRecord>()
+				.dataSource(dataSource)
+				.sql(sql)
+				.beanMapped()
+				.build();
+	}
+	
+	@Bean
+	ItemWriter<List<DatiFatturatoRecord>> appiattisciFatturatoRecordListItemWriter(JdbcBatchItemWriter<DatiFatturatoRecord> jdbcItemWriter) {
+	    return items -> {
+	        List<DatiFatturatoRecord> listaAppiattita = items.getItems().stream()
+	            .flatMap(Collection::stream)
+	            .collect(Collectors.toList());
+
+	        /*
+	         * Dato che Spring Batch non gestisce in scrittura una lista di oggetti ma un Chunk,
+	         * ne creo uno manuale ad hoc.
+	         */
+	        Chunk<DatiFatturatoRecord> chunk = new Chunk<>(listaAppiattita);
+
+	        jdbcItemWriter.write(chunk);
+	    };
+	}
 	
 }

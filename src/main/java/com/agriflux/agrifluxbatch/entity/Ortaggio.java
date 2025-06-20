@@ -41,6 +41,9 @@ public class Ortaggio {
 	
 	@OneToMany
 	private List<Coltura> colture;
+	
+	@OneToMany
+	private List<DatoEconomico> datiEconomici;
 
 	public List<Coltura> getColture() {
 		return colture;
@@ -144,6 +147,14 @@ public class Ortaggio {
 
 	public void setRangeStagioneSemina(RangeStagioneSemina rangeStagioneSemina) {
 		this.rangeStagioneSemina = rangeStagioneSemina;
+	}
+	
+	public List<DatoEconomico> getDatiEconomici() {
+		return datiEconomici;
+	}
+
+	public void setDatiEconomici(List<DatoEconomico> datiEconomici) {
+		this.datiEconomici = datiEconomici;
 	}
 	
 }

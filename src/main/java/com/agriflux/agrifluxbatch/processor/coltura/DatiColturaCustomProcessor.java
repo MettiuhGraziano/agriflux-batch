@@ -32,6 +32,10 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 				}
 			}
 		}
+		
+		if (cacheDatiEconomiciOrtaggio.isEmpty()) {
+			cacheDatiEconomiciOrtaggio = datoEconomicoService.findDatoEconomicoOrtaggio();
+		}
 	}
 	
 	@Override
@@ -83,11 +87,18 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 			
 			LocalDateTime dataOdierna = LocalDateTime.now();
 			if (dataRaccoltoColtura.isBefore(dataOdierna)) {
-
-				// TODO RECUPERA IL PREZZO MEDIO PER ANNO DELL'ORTAGGIO DA
-				// DATI_ECONOMICI_NAZIONALI
-				BigDecimal prezzoKg = applicaVariazioneDistribuzione(new BigDecimal(0.60));
-
+				
+				BigDecimal prezzoKg = null;
+				
+				for (Map<Integer, BigDecimal> mapCache : cacheDatiEconomiciOrtaggio.get(idOrtaggio)) {
+					if (null != mapCache.get(dataRaccoltoColtura.getYear())) {
+						prezzoKg = applicaVariazioneDistribuzione(mapCache.get(dataRaccoltoColtura.getYear()));
+						break;
+					} else {
+						continue;
+					}
+				}
+				
 				response.add(new DatiColturaRecord(prezzoKg, dataSeminaColtura,
 						dataRaccoltoColtura, item.idParticella(), idOrtaggio));
 				

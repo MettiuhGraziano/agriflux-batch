@@ -25,7 +25,7 @@ public class DatiProduzioneCustomProcessor extends DatiProcessor implements Item
 		
 		int numLavoratori = generaRandomIntFromRange(1, 11);
 		
-		BigDecimal speseProduzione = generaRandomBigDecimalFromRange("100.0|800.0");
+		BigDecimal speseProduzione = generaRandomBigDecimalFromRange("100.0|650.0");
 		
 		return new DatiProduzioneRecord(quantitaRaccolto, quantitaRaccoltoVenduto, quantitaRaccoltoMarcio,
 				quantitaRaccoltoTerzi, fatturatoRaccolto, numLavoratori, speseProduzione, item.idColtura());

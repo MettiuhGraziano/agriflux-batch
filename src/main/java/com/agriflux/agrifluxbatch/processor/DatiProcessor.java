@@ -14,6 +14,7 @@ import org.springframework.stereotype.Component;
 import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioRangeStagioneSumDTO;
 import com.agriflux.agrifluxshared.dto.particella.DatiParticellaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneJoinColturaFatturatoDTO;
+import com.agriflux.agrifluxshared.service.datoEconomico.DatoEconomicoService;
 import com.agriflux.agrifluxshared.service.ortaggio.DatiOrtaggioService;
 import com.agriflux.agrifluxshared.service.particella.DatiParticellaService;
 import com.agriflux.agrifluxshared.service.produzione.DatiProduzioneService;
@@ -30,6 +31,9 @@ public class DatiProcessor {
 	@Autowired
 	protected DatiProduzioneService produzioneService;
 	
+	@Autowired
+	protected DatoEconomicoService datoEconomicoService;
+	
 	private static final String DELIMITER = "|";
 	
 	private static final Random random = new Random();
@@ -37,51 +41,7 @@ public class DatiProcessor {
 	protected static final Map<Long, OrtaggioRangeStagioneSumDTO> cacheOrtaggio = new HashMap<Long, OrtaggioRangeStagioneSumDTO>();
 	protected static final Map<Long, DatiParticellaDTO> cacheParticella = new HashMap<Long, DatiParticellaDTO>();
 	protected static Map<Long, List<Map<Integer, ProduzioneJoinColturaFatturatoDTO>>> cacheParticellaProduzione = new HashMap<Long, List<Map<Integer, ProduzioneJoinColturaFatturatoDTO>>>();
-	
-//	@BeforeStep
-//	public void init() {
-//
-//		if (cacheOrtaggio.isEmpty()) {
-//			List<OrtaggioRangeStagioneSumDTO> ortaggioDtoList = ortaggioService.findAllOrtaggioRangeStagione();
-//
-//			if (null != ortaggioDtoList && !ortaggioDtoList.isEmpty()) {
-//				for (OrtaggioRangeStagioneSumDTO ortaggioDTO : ortaggioDtoList) {
-//					cacheOrtaggio.put(ortaggioDTO.getIdOrtaggio(), ortaggioDTO);
-//				}
-//			}
-//		}
-//		
-//		if (cacheParticella.isEmpty()) {
-//			List<DatiParticellaDTO> particellaDtoList = particellaService.findAllParticellaIdAnno();
-//			
-//			if (null != particellaDtoList && !particellaDtoList.isEmpty()) {
-//				for (DatiParticellaDTO datiParticellaDTO : particellaDtoList) {
-//					cacheParticella.put(datiParticellaDTO.getIdParticella(), datiParticellaDTO);
-//				}
-//			}
-//		}
-//		
-//		if (cacheParticellaProduzione.isEmpty()) {
-//			Map<Long, Map<Integer, ProduzioneJoinColturaFatturatoDTO>> particellaMap = produzioneService.findProduzioneJoinColturaFatturato();
-//		
-//			if (null != particellaMap && !particellaMap.isEmpty()) {
-//				cacheParticellaProduzione = particellaMap;
-//			}
-//		}
-//		
-//	}
-	
-//	public Map<Long, OrtaggioRangeStagioneSumDTO> getCacheOrtaggio() {
-//		return cacheOrtaggio;
-//	}
-//	
-//	public Map<Long, DatiParticellaDTO> getCacheParticella() {
-//		return cacheParticella;
-//	}
-//	
-//	public Map<Long, Map<Integer, ProduzioneJoinColturaFatturatoDTO>> getCacheParticellaProduzione() {
-//		return cacheParticellaProduzione;
-//	}
+	protected static Map<Long, List<Map<Integer, BigDecimal>>> cacheDatiEconomiciOrtaggio = new HashMap<Long, List<Map<Integer, BigDecimal>>>();
 	
 	protected static BigDecimal generaRandomBigDecimalFromRange(String range) {
 

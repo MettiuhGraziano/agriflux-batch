@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.processor.coltura;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -17,7 +17,7 @@ import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioRangeStagioneSumDTO;
 
 public class DatiColturaCustomProcessor extends DatiProcessor implements ItemProcessor<DatiParticellaRecordReduce, List<DatiColturaRecord>> {
 	
-	private final Map<Long, LocalDateTime> cacheDateParticella = new HashMap<Long, LocalDateTime>();
+	private final Map<Long, LocalDate> cacheDateParticella = new HashMap<Long, LocalDate>();
 	
 	private boolean counterParticella = false;
 	
@@ -49,7 +49,7 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 				if (null != cacheDateParticella.get(item.idParticella()) && !cacheDateParticella.isEmpty()) {
 					generateColtura(item, response);
 				} else {
-					LocalDateTime dataPrimaSemina = LocalDateTime.of(Integer.parseInt(item.annoInstallazione()), 2, 10, 0, 0);
+					LocalDate dataPrimaSemina = LocalDate.of(Integer.parseInt(item.annoInstallazione()), 2, 10);
 					
 					cacheDateParticella.put(item.idParticella(), dataPrimaSemina);
 					
@@ -71,7 +71,7 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 			int meseSeminaMin = Integer.parseInt(ortaggio.getMeseSeminaMin());
 			int meseSeminaMax = Integer.parseInt(ortaggio.getMeseSeminaMax());
 			
-			LocalDateTime dataUltimoRaccolto = cacheDateParticella.get(item.idParticella());
+			LocalDate dataUltimoRaccolto = cacheDateParticella.get(item.idParticella());
 			
 			int mese = dataUltimoRaccolto.getMonthValue();
 
@@ -82,10 +82,10 @@ public class DatiColturaCustomProcessor extends DatiProcessor implements ItemPro
 				meseSeminaMax = Integer.parseInt(ortaggio.getMeseSeminaMax());
 			}
 			
-			LocalDateTime dataSeminaColtura = dataUltimoRaccolto;
-			LocalDateTime dataRaccoltoColtura = dataSeminaColtura.plusDays(ortaggio.getGiorniSeminaRaccolto());
+			LocalDate dataSeminaColtura = dataUltimoRaccolto;
+			LocalDate dataRaccoltoColtura = dataSeminaColtura.plusDays(ortaggio.getGiorniSeminaRaccolto());
 			
-			LocalDateTime dataOdierna = LocalDateTime.now();
+			LocalDate dataOdierna = LocalDate.now();
 			if (dataRaccoltoColtura.isBefore(dataOdierna)) {
 				
 				BigDecimal prezzoKg = null;

@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -21,8 +21,8 @@ public class Coltura {
 	
 	private BigDecimal prezzoKg;
 	
-	private LocalDateTime dataSemina;
-	private LocalDateTime dataRaccolto;
+	private LocalDate dataSemina;
+	private LocalDate dataRaccolto;
 	
 	@ManyToOne
     @JoinColumn(name = "ID_PARTICELLA")
@@ -40,19 +40,19 @@ public class Coltura {
 		this.idColtura = idColtura;
 	}
 	
-	public LocalDateTime getDataSemina() {
+	public LocalDate getDataSemina() {
 		return dataSemina;
 	}
 	
-	public void setDataSemina(LocalDateTime dataSemina) {
+	public void setDataSemina(LocalDate dataSemina) {
 		this.dataSemina = dataSemina;
 	}
 	
-	public LocalDateTime getDataRaccolto() {
+	public LocalDate getDataRaccolto() {
 		return dataRaccolto;
 	}
 	
-	public void setDataRaccolto(LocalDateTime dataRaccolto) {
+	public void setDataRaccolto(LocalDate dataRaccolto) {
 		this.dataRaccolto = dataRaccolto;
 	}
 

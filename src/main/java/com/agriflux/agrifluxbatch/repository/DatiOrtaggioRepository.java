@@ -8,7 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.agriflux.agrifluxbatch.entity.Ortaggio;
-import com.agriflux.agrifluxbatch.repository.projection.OrtaggioRangeStagioneProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ortaggio.OrtaggioRangeStagioneProjection;
 
 @Repository
 public interface DatiOrtaggioRepository extends CrudRepository<Ortaggio, Long>, PagingAndSortingRepository<Ortaggio, Long> {

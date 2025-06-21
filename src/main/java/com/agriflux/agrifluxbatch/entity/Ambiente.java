@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -23,7 +23,7 @@ public class Ambiente {
 	private BigDecimal irraggiamentoMedio;
 	private BigDecimal ombreggiamentoMedio;
 	
-	private LocalDateTime dataRilevazione;
+	private LocalDate dataRilevazione;
 	
 	public long getIdAmbiente() {
 		return idAmbiente;
@@ -73,11 +73,11 @@ public class Ambiente {
 		this.ombreggiamentoMedio = ombreggiamentoMedio;
 	}
 	
-	public LocalDateTime getDataRilevazione() {
+	public LocalDate getDataRilevazione() {
 		return dataRilevazione;
 	}
 	
-	public void setDataRilevazione(LocalDateTime dataRilevazione) {
+	public void setDataRilevazione(LocalDate dataRilevazione) {
 		this.dataRilevazione = dataRilevazione;
 	}
 	

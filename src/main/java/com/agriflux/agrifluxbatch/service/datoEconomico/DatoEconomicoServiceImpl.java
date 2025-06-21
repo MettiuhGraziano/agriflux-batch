@@ -10,7 +10,7 @@ import java.util.stream.Collectors;
 import org.springframework.stereotype.Service;
 
 import com.agriflux.agrifluxbatch.repository.DatiEconomiciRepository;
-import com.agriflux.agrifluxbatch.repository.projection.DatoEconomicoOrtaggioProjection;
+import com.agriflux.agrifluxbatch.repository.projection.datoEconomico.DatoEconomicoOrtaggioProjection;
 import com.agriflux.agrifluxshared.service.datoEconomico.DatoEconomicoService;
 
 @Service

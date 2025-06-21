@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.entity;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
@@ -25,7 +25,7 @@ public class Terreno {
 	private BigDecimal porosita;
 	private BigDecimal temperatura;
 	
-	private LocalDateTime dataRilevazione;
+	private LocalDate dataRilevazione;
 	
 	@ManyToOne
     @JoinColumn(name = "ID_PARTICELLA")
@@ -79,11 +79,11 @@ public class Terreno {
 		this.temperatura = temperatura;
 	}
 	
-	public LocalDateTime getDataRilevazione() {
+	public LocalDate getDataRilevazione() {
 		return dataRilevazione;
 	}
 	
-	public void setDataRilevazione(LocalDateTime dataRilevazione) {
+	public void setDataRilevazione(LocalDate dataRilevazione) {
 		this.dataRilevazione = dataRilevazione;
 	}
 	

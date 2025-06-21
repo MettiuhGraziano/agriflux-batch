@@ -10,7 +10,7 @@ import org.springframework.stereotype.Service;
 
 import com.agriflux.agrifluxbatch.entity.Ortaggio;
 import com.agriflux.agrifluxbatch.repository.DatiOrtaggioRepository;
-import com.agriflux.agrifluxbatch.repository.projection.OrtaggioRangeStagioneProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ortaggio.OrtaggioRangeStagioneProjection;
 import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioDTO;
 import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioRangeStagioneSumDTO;
 import com.agriflux.agrifluxshared.service.ortaggio.DatiOrtaggioService;

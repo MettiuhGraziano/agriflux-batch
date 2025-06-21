@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.processor.ambiente;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -30,7 +30,7 @@ public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemPr
 		int meseFine = Integer.parseInt(meseGiornoFine.substring(0, delimiterIndex));
 		int giornoFine = Integer.parseInt(meseGiornoFine.substring(delimiterIndex + 1));
 		
-		LocalDateTime dataOdierna = LocalDateTime.now();
+		LocalDate dataOdierna = LocalDate.now();
 		
 		while (counterAnnoRilevazione <= dataOdierna.getYear()) {
 
@@ -62,10 +62,10 @@ public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemPr
 		BigDecimal ombreggiamento = generaRandomBigDecimalFromRange(datiStagioneRecord.rangeOmbreggiamento());
 		
 
-		LocalDateTime dataInizioRange = LocalDateTime.of(counterAnnoRilevazione, meseInizio, giornoInizio, 0, 0);
-		LocalDateTime dataFineRange = LocalDateTime.of(counterAnnoRilevazione, meseFine, giornoFine, 23, 59);
+		LocalDate dataInizioRange = LocalDate.of(counterAnnoRilevazione, meseInizio, giornoInizio);
+		LocalDate dataFineRange = LocalDate.of(counterAnnoRilevazione, meseFine, giornoFine);
 
-		LocalDateTime dataRilevazione = generaDataRandomFromRange(dataInizioRange, dataFineRange);
+		LocalDate dataRilevazione = generaDataRandomFromRange(dataInizioRange, dataFineRange);
 
 		response.add(new DatiAmbienteRecord(temperatura, umidita, precipitazioni, irraggiamento, ombreggiamento,
 				dataRilevazione));

@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.processor;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.time.temporal.ChronoUnit;
 import java.util.HashMap;
 import java.util.List;
@@ -83,7 +83,7 @@ public class DatiProcessor {
 		return valoreIniziale.add(new BigDecimal(variazione));
 	}
 	
-	protected LocalDateTime generaDataRandomFromRange(LocalDateTime dataMin, LocalDateTime dataMax) {
+	protected LocalDate generaDataRandomFromRange(LocalDate dataMin, LocalDate dataMax) {
 		long giorniInclusi = ChronoUnit.DAYS.between(dataMin, dataMax);
         long giornateRandom = random.nextInt((int) Math.abs(giorniInclusi) + 1);
         

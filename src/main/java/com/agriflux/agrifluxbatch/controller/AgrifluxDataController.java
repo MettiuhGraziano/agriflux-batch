@@ -12,7 +12,6 @@ import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneMorfologiaColturaDTO;
-import com.agriflux.agrifluxshared.dto.terreno.TerrenoDTO;
 import com.agriflux.agrifluxshared.dto.terreno.TerrenoMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
@@ -29,12 +28,6 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/datiAmbientali")
 	public List<AmbienteDTO> findAllAmbienteSortById() {
 		return agrifluxDataServiceImpl.findAllAmbienteSortById();
-	}
-
-	@Override
-	@GetMapping("/datiTerreni")
-	public List<TerrenoDTO> findAllTerrenoSortById() {
-		return agrifluxDataServiceImpl.findAllTerrenoSortById();
 	}
 
 	@Override

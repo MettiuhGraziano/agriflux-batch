@@ -1,7 +1,7 @@
 package com.agriflux.agrifluxbatch.processor.terreno;
 
 import java.math.BigDecimal;
-import java.time.LocalDateTime;
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +33,7 @@ public class DatiRilevazioneTerrenoCustomProcessor extends DatiProcessor impleme
 
 		List<DatiRilevazioneTerrenoRecord> response = new ArrayList<DatiRilevazioneTerrenoRecord>();
 		
-		LocalDateTime dataOdierna = LocalDateTime.now();
+		LocalDate dataOdierna = LocalDate.now();
 		
 		if (null != cacheParticella && !cacheParticella.isEmpty()) {
 			for (Long idParticella : cacheParticella.keySet()) {
@@ -43,11 +43,11 @@ public class DatiRilevazioneTerrenoCustomProcessor extends DatiProcessor impleme
 				
 				while (annoInstallazione <= annoAttuale) {
 					
-					LocalDateTime dataRange1 = LocalDateTime.of(annoInstallazione, 1, 1, 0, 0);
-					LocalDateTime dataRange2 = LocalDateTime.of(annoInstallazione, 3, 1, 0, 0);
-					LocalDateTime dataRange3 = LocalDateTime.of(annoInstallazione, 6, 1, 0, 0);
-					LocalDateTime dataRange4 = LocalDateTime.of(annoInstallazione, 9, 1, 0, 0);
-					LocalDateTime dataRange5 = LocalDateTime.of(annoInstallazione, 12, 31, 23, 59);
+					LocalDate dataRange1 = LocalDate.of(annoInstallazione, 1, 1);
+					LocalDate dataRange2 = LocalDate.of(annoInstallazione, 3, 1);
+					LocalDate dataRange3 = LocalDate.of(annoInstallazione, 6, 1);
+					LocalDate dataRange4 = LocalDate.of(annoInstallazione, 9, 1);
+					LocalDate dataRange5 = LocalDate.of(annoInstallazione, 12, 31);
 					
 					int meseAttuale = dataOdierna.getMonth().getValue();
 					
@@ -73,8 +73,8 @@ public class DatiRilevazioneTerrenoCustomProcessor extends DatiProcessor impleme
 	}
 
 	private void generaRilevazioneRecord(DatiRilevazioneTerrenoMetadata item,
-			List<DatiRilevazioneTerrenoRecord> response, Long idParticella, LocalDateTime dataRange1,
-			LocalDateTime dataRange2) {
+			List<DatiRilevazioneTerrenoRecord> response, Long idParticella, LocalDate dataRange1,
+			LocalDate dataRange2) {
 		
 		BigDecimal phSuolo = generaRandomBigDecimalFromRange(item.phSuolo());
 		BigDecimal umidita = generaRandomBigDecimalFromRange(item.umidita());
@@ -82,7 +82,7 @@ public class DatiRilevazioneTerrenoCustomProcessor extends DatiProcessor impleme
 		BigDecimal porosita = generaRandomBigDecimalFromRange(item.porosita());
 		BigDecimal temperatura = generaRandomBigDecimalFromRange(item.temperatura());
 
-		LocalDateTime dataRilevazione = generaDataRandomFromRange(dataRange1, dataRange2);
+		LocalDate dataRilevazione = generaDataRandomFromRange(dataRange1, dataRange2);
 
 		response.add(new DatiRilevazioneTerrenoRecord(phSuolo, umidita, capacitaAssorbente, porosita, temperatura,
 				dataRilevazione, idParticella));

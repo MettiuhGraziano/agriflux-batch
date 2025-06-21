@@ -1,9 +1,12 @@
 package com.agriflux.agrifluxbatch.entity;
 
+import java.util.List;
+
 import jakarta.persistence.Entity;
 import jakarta.persistence.GeneratedValue;
 import jakarta.persistence.GenerationType;
 import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 
 @Entity
@@ -16,6 +19,9 @@ public class Litologia {
 	
 	private String tipologia;
 	private String descrizione;
+	
+	@OneToMany( mappedBy = "litologia")
+	private List<Particella> particelle;
 	
 	public long getIdLitologia() {
 		return idLitologia;
@@ -39,6 +45,14 @@ public class Litologia {
 	
 	public void setDescrizione(String descrizione) {
 		this.descrizione = descrizione;
+	}
+	
+	public List<Particella> getParticelle() {
+		return particelle;
+	}
+
+	public void setParticelle(List<Particella> particelle) {
+		this.particelle = particelle;
 	}
 	
 }

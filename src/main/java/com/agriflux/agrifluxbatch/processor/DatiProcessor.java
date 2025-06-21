@@ -11,12 +11,12 @@ import java.util.Random;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
+import com.agriflux.agrifluxbatch.service.particella.DatiParticellaServiceImpl;
 import com.agriflux.agrifluxshared.dto.ortaggio.OrtaggioRangeStagioneSumDTO;
 import com.agriflux.agrifluxshared.dto.particella.DatiParticellaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneJoinColturaFatturatoDTO;
 import com.agriflux.agrifluxshared.service.datoEconomico.DatoEconomicoService;
 import com.agriflux.agrifluxshared.service.ortaggio.DatiOrtaggioService;
-import com.agriflux.agrifluxshared.service.particella.DatiParticellaService;
 import com.agriflux.agrifluxshared.service.produzione.DatiProduzioneService;
 
 @Component
@@ -26,7 +26,7 @@ public class DatiProcessor {
 	protected DatiOrtaggioService ortaggioService;
 	
 	@Autowired
-	protected DatiParticellaService particellaService;
+	protected DatiParticellaServiceImpl particellaService;
 	
 	@Autowired
 	protected DatiProduzioneService produzioneService;

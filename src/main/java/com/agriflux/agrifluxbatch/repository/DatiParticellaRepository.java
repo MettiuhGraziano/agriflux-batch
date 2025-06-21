@@ -8,7 +8,7 @@ import org.springframework.data.repository.PagingAndSortingRepository;
 import org.springframework.stereotype.Repository;
 
 import com.agriflux.agrifluxbatch.entity.Particella;
-import com.agriflux.agrifluxbatch.repository.projection.ParticellaIdAnnoProjection;
+import com.agriflux.agrifluxbatch.repository.projection.particella.ParticellaIdAnnoProjection;
 
 @Repository
 public interface DatiParticellaRepository extends CrudRepository<Particella, Long>, PagingAndSortingRepository<Particella, Long> {
@@ -16,4 +16,5 @@ public interface DatiParticellaRepository extends CrudRepository<Particella, Lon
 	@Query("SELECT p.idParticella AS idParticella, p.annoInstallazione AS annoInstallazione"
 			+ " FROM Particella p")
 	List<ParticellaIdAnnoProjection> findAllParticellaIdAnnoProjection();
+	
 }

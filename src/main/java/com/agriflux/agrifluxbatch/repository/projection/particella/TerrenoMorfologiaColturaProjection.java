@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.repository.projection;
+package com.agriflux.agrifluxbatch.repository.projection.particella;
 
 import java.util.Date;
 

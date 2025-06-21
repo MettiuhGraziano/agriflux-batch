@@ -39,10 +39,10 @@ public class Ortaggio {
     @JoinColumn(name = "ID_RANGE_STAGIONE_SEMINA")
 	private RangeStagioneSemina rangeStagioneSemina;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "ortaggio")
 	private List<Coltura> colture;
 	
-	@OneToMany
+	@OneToMany(mappedBy = "ortaggio")
 	private List<DatoEconomico> datiEconomici;
 
 	public List<Coltura> getColture() {

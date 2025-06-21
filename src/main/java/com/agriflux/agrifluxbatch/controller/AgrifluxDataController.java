@@ -8,9 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agriflux.agrifluxbatch.service.AgrifluxDataServiceImpl;
 import com.agriflux.agrifluxshared.dto.ambiente.AmbienteDTO;
-import com.agriflux.agrifluxshared.dto.coltura.ColturaDTO;
-import com.agriflux.agrifluxshared.dto.coltura.ColturaGroupByProdottoDTO;
-import com.agriflux.agrifluxshared.dto.coltura.ColturaListPrezzoDataRaccoltoDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneDTO;
@@ -29,12 +26,6 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	}
 	
 	@Override
-	@GetMapping("/datiColture")
-	public List<ColturaDTO> findAllColturaSortById(){
-		return agrifluxDataServiceImpl.findAllColturaSortById();
-	}
-
-	@Override
 	@GetMapping("/datiAmbientali")
 	public List<AmbienteDTO> findAllAmbienteSortById() {
 		return agrifluxDataServiceImpl.findAllAmbienteSortById();
@@ -50,18 +41,6 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/datiProduzione")
 	public List<ProduzioneDTO> findAllProduzioneSortById() {
 		return agrifluxDataServiceImpl.findAllProduzioneSortById();
-	}
-
-	@Override
-	@GetMapping("/listColtureGroupByProdotto")
-	public List<ColturaGroupByProdottoDTO> countColtureGroupByProdotto() {
-		return agrifluxDataServiceImpl.countColtureGroupByProdotto();
-	}
-
-	@Override
-	@GetMapping("/findPrezziAndDateRaccoltoColtura")
-	public Map<String, ColturaListPrezzoDataRaccoltoDTO> findPrezziAndDateColtura() {
-		return agrifluxDataServiceImpl.findPrezziAndDateColtura();
 	}
 
 	@Override

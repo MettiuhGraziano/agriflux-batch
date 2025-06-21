@@ -1,11 +1,11 @@
-package com.agriflux.agrifluxbatch.repository.projection;
+package com.agriflux.agrifluxbatch.repository.projection.coltura;
 
 import java.math.BigDecimal;
-import java.util.Date;
+import java.time.LocalDate;
 
 public interface ColturaProdottoPrezzoDataProjection {
 	
 	String getProdottoColtivato();
 	BigDecimal getPrezzoKg();
-	Date getDataRaccolto();
+	LocalDate getDataRaccolto();
 }

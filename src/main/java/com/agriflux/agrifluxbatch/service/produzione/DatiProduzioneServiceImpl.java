@@ -14,6 +14,8 @@ import org.springframework.stereotype.Service;
 import com.agriflux.agrifluxbatch.entity.Produzione;
 import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaFatturatoProjection;
+import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneQuantitaJoinColturaProjection;
+import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneJoinColturaFatturatoDTO;
 import com.agriflux.agrifluxshared.service.produzione.DatiProduzioneService;
@@ -86,6 +88,72 @@ public class DatiProduzioneServiceImpl implements DatiProduzioneService {
 				response.put(idParticella, mapList);
 			}
 			
+		return response;
+	}
+
+	@Override
+	public Map<String, Map<String, ProduzioneColturaDTO>> findProduzioneQuantitaJoinColtura() {
+		Map<String, Map<String, ProduzioneColturaDTO>> response = new HashMap<String, Map<String, ProduzioneColturaDTO>>();
+
+		List<ProduzioneQuantitaJoinColturaProjection> produzioneWithColturaProjection = datiProduzioneRepository
+				.findProduzioneQuantitaJoinColturaProjection();
+
+		ProduzioneColturaDTO dto = null;
+
+		for (ProduzioneQuantitaJoinColturaProjection projection : produzioneWithColturaProjection) {
+
+			String annoRiferimento = projection.getAnnoRaccolto();
+
+			if (!response.isEmpty() && null != response.get(projection.getNomeOrtaggio())) {
+
+				if (null != response.get(projection.getNomeOrtaggio()).get(annoRiferimento)) {
+
+					BigDecimal quantitaRaccoltoTotale = response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.getQuantitaRaccolto().add(projection.getQuantitaRaccolto());
+
+					BigDecimal quantitaRaccoltoTotaleVenduto = response.get(projection.getNomeOrtaggio())
+							.get(annoRiferimento).getQuantitaRaccoltoVenduto()
+							.add(projection.getQuantitaRaccoltoVenduto());
+
+					BigDecimal quantitaRaccoltoTotaleMarcio = response.get(projection.getNomeOrtaggio())
+							.get(annoRiferimento).getQuantitaRaccoltoMarcio()
+							.add(projection.getQuantitaRaccoltoMarcio());
+
+					BigDecimal quantitaRaccoltoTotaleTerzi = response.get(projection.getNomeOrtaggio())
+							.get(annoRiferimento).getQuantitaRaccoltoTerzi()
+							.add(projection.getQuantitaRaccoltoTerzi());
+
+					BigDecimal fatturatoTotale = response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.getFatturatoRaccolto().add(projection.getFatturatoRaccolto());
+
+					response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.setQuantitaRaccolto(quantitaRaccoltoTotale);
+					response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.setQuantitaRaccoltoVenduto(quantitaRaccoltoTotaleVenduto);
+					response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.setQuantitaRaccoltoMarcio(quantitaRaccoltoTotaleMarcio);
+					response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.setQuantitaRaccoltoTerzi(quantitaRaccoltoTotaleTerzi);
+					response.get(projection.getNomeOrtaggio()).get(annoRiferimento)
+							.setFatturatoRaccolto(fatturatoTotale);
+
+				} else {
+					dto = new ProduzioneColturaDTO(projection.getQuantitaRaccolto(),
+							projection.getQuantitaRaccoltoVenduto(), projection.getQuantitaRaccoltoMarcio(),
+							projection.getQuantitaRaccoltoTerzi(), projection.getFatturatoRaccolto());
+					response.get(projection.getNomeOrtaggio()).put(annoRiferimento, dto);
+				}
+			} else {
+				dto = new ProduzioneColturaDTO(projection.getQuantitaRaccolto(),
+						projection.getQuantitaRaccoltoVenduto(), projection.getQuantitaRaccoltoMarcio(),
+						projection.getQuantitaRaccoltoTerzi(), projection.getFatturatoRaccolto());
+				Map<String, ProduzioneColturaDTO> mappaAnno = new HashMap<String, ProduzioneColturaDTO>();
+				mappaAnno.put(annoRiferimento, dto);
+				response.put(projection.getNomeOrtaggio(), mappaAnno);
+			}
+
+		}
+
 		return response;
 	}
 

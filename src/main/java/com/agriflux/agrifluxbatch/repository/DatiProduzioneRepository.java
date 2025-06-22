@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.agriflux.agrifluxbatch.entity.Produzione;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaFatturatoProjection;
+import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneQuantitaJoinColturaProjection;
 
 @Repository
 public interface DatiProduzioneRepository extends CrudRepository<Produzione, Long>, PagingAndSortingRepository<Produzione, Long> {
@@ -18,10 +19,11 @@ public interface DatiProduzioneRepository extends CrudRepository<Produzione, Lon
 			+ "FROM Produzione p JOIN p.coltura c")
 	List<ProduzioneJoinColturaFatturatoProjection> findProduzioneJoinColturaFatturatoProjection();
 	
-//	@Query("SELECT c.prodottoColtivato AS prodottoColtivato, " + "YEAR(c.dataRaccolto) AS annoRaccolto, "
-//			+ "p.quantitaRaccolto AS quantitaRaccolto, " + "p.quantitaRaccoltoVenduto AS quantitaRaccoltoVenduto, "
-//			+ "p.fatturatoColtura AS fatturatoColtura " + "FROM Produzione p JOIN p.coltura c")
-//	List<ProduzioneJoinColturaProjection> findProduzioneWithColturaProjection();
+	@Query("SELECT p.quantitaRaccolto AS quantitaRaccolto, p.quantitaRaccoltoVenduto AS quantitaRaccoltoVenduto, "
+			+ "p.quantitaRaccoltoMarcio AS quantitaRaccoltoMarcio, p.quantitaRaccoltoTerzi AS quantitaRaccoltoTerzi, "
+			+ "p.fatturatoRaccolto AS fatturatoRaccolto, YEAR(c.dataRaccolto) AS annoRaccolto, o.nome AS nomeOrtaggio "
+			+ "FROM Produzione p JOIN p.coltura c JOIN c.ortaggio o")
+	List<ProduzioneQuantitaJoinColturaProjection> findProduzioneQuantitaJoinColturaProjection();
 //	
 //	
 //	@Query("SELECT c.prodottoColtivato AS prodottoColtivato, " + "YEAR(c.dataSemina) AS annoSemina, "

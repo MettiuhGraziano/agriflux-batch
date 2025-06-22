@@ -9,6 +9,7 @@ import org.springframework.stereotype.Repository;
 
 import com.agriflux.agrifluxbatch.entity.Produzione;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaFatturatoProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
 import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneQuantitaJoinColturaProjection;
 
 @Repository
@@ -24,14 +25,13 @@ public interface DatiProduzioneRepository extends CrudRepository<Produzione, Lon
 			+ "p.fatturatoRaccolto AS fatturatoRaccolto, YEAR(c.dataRaccolto) AS annoRaccolto, o.nome AS nomeOrtaggio "
 			+ "FROM Produzione p JOIN p.coltura c JOIN c.ortaggio o")
 	List<ProduzioneQuantitaJoinColturaProjection> findProduzioneQuantitaJoinColturaProjection();
-//	
-//	
-//	@Query("SELECT c.prodottoColtivato AS prodottoColtivato, " + "YEAR(c.dataSemina) AS annoSemina, "
-//			+ "p.tempoSemina AS tempoSemina, " + "p.tempoGerminazione AS tempoGerminazione, "
-//			+ "p.tempoTrapianto AS tempoTrapianto, " + "p.tempoMaturazione AS tempoMaturazione, "
-//			+ "p.tempoRaccolta AS tempoRaccolta " + "FROM Produzione p JOIN p.coltura c")
-//	List<ProduzioneJoinColturaTempiProjection> findProduzioneWithColturaTempiProjection();
-//	
+	
+	@Query("SELECT o.nome AS nomeOrtaggio, " + "YEAR(c.dataSemina) AS annoSemina, "
+			+ "o.giorniSemina AS tempoSemina, " + "o.giorniGerminazione AS tempoGerminazione, "
+			+ "o.giorniTrapianto AS tempoTrapianto, " + "o.giorniMaturazione AS tempoMaturazione, "
+			+ "o.giorniRaccolta AS tempoRaccolta " + "FROM Produzione p JOIN p.coltura c JOIN c.ortaggio o")
+	List<ProduzioneJoinColturaTempiProjection> findProduzioneJoinColturaTempiProjection();
+	
 //	@Query("SELECT p.id AS idProduzione, " + " c.prodottoColtivato AS prodottoColtivato, "
 //			+ "c.dataRaccolto AS dataRaccolto, " + "m.idMorfologia AS idMorfologia, "
 //			+ "m.estensioneTerreno AS estensioneTerreno, " + "m.pendenza AS pendenza, "

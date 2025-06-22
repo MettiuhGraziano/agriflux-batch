@@ -8,7 +8,6 @@ import org.springframework.web.bind.annotation.RestController;
 
 import com.agriflux.agrifluxbatch.service.AgrifluxDataServiceImpl;
 import com.agriflux.agrifluxshared.dto.ambiente.AmbienteDTO;
-import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneMorfologiaColturaDTO;
 import com.agriflux.agrifluxshared.service.AgrifluxDataService;
 
@@ -25,12 +24,6 @@ public class AgrifluxDataController implements AgrifluxDataService{
 	@GetMapping("/datiAmbientali")
 	public List<AmbienteDTO> findAllAmbienteSortById() {
 		return agrifluxDataServiceImpl.findAllAmbienteSortById();
-	}
-
-	@Override
-	@GetMapping("/findProduzioneTempiJoinColtura")
-	public Map<String, List<ProduzioneColturaTempiDTO>> findProduzioneTempiJoinColtura() {
-		return agrifluxDataServiceImpl.findProduzioneTempiJoinColtura();
 	}
 
 	@Override

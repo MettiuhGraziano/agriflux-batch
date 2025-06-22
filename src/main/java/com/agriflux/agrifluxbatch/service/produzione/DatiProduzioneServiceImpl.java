@@ -2,6 +2,7 @@ package com.agriflux.agrifluxbatch.service.produzione;
 
 import java.math.BigDecimal;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -14,8 +15,10 @@ import org.springframework.stereotype.Service;
 import com.agriflux.agrifluxbatch.entity.Produzione;
 import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
 import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaFatturatoProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
 import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneQuantitaJoinColturaProjection;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaDTO;
+import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneJoinColturaFatturatoDTO;
 import com.agriflux.agrifluxshared.service.produzione.DatiProduzioneService;
@@ -93,6 +96,7 @@ public class DatiProduzioneServiceImpl implements DatiProduzioneService {
 
 	@Override
 	public Map<String, Map<String, ProduzioneColturaDTO>> findProduzioneQuantitaJoinColtura() {
+		
 		Map<String, Map<String, ProduzioneColturaDTO>> response = new HashMap<String, Map<String, ProduzioneColturaDTO>>();
 
 		List<ProduzioneQuantitaJoinColturaProjection> produzioneWithColturaProjection = datiProduzioneRepository
@@ -152,6 +156,85 @@ public class DatiProduzioneServiceImpl implements DatiProduzioneService {
 				response.put(projection.getNomeOrtaggio(), mappaAnno);
 			}
 
+		}
+
+		return response;
+	}
+
+	@Override
+	public Map<String, List<ProduzioneColturaTempiDTO>> findProduzioneJoinColturaTempi() {
+
+		Map<String, List<ProduzioneColturaTempiDTO>> response = new HashMap<String, List<ProduzioneColturaTempiDTO>>();
+
+		List<String> counterAnniRiferimento = new ArrayList<String>();
+		List<String> counterProdotti = new ArrayList<String>();
+
+		List<ProduzioneJoinColturaTempiProjection> projectionList = datiProduzioneRepository
+				.findProduzioneJoinColturaTempiProjection();
+
+		for (ProduzioneJoinColturaTempiProjection projection : projectionList) {
+
+			String annoRiferimento = projection.getAnnoSemina();
+
+			if (!counterAnniRiferimento.contains(annoRiferimento)) {
+				counterAnniRiferimento.add(annoRiferimento);
+			}
+
+			String prodotto = projection.getNomeOrtaggio();
+
+			if (!counterProdotti.contains(prodotto)) {
+				counterProdotti.add(prodotto);
+			}
+		}
+
+		long counterNumeroColtureAnno = 0;
+
+		for (String annoRiferimento : counterAnniRiferimento) {
+
+			List<ProduzioneColturaTempiDTO> counterList = new ArrayList<ProduzioneColturaTempiDTO>();
+
+			for (String prodotto : counterProdotti) {
+
+				double sommaTempoSemina = projectionList.stream().filter(
+						p -> p.getNomeOrtaggio().equals(prodotto) && p.getAnnoSemina().equals(annoRiferimento))
+						.mapToDouble(ProduzioneJoinColturaTempiProjection::getTempoSemina).sum();
+
+				counterNumeroColtureAnno = projectionList.stream().filter(
+						p -> p.getNomeOrtaggio().equals(prodotto) && p.getAnnoSemina().equals(annoRiferimento))
+						.mapToDouble(ProduzioneJoinColturaTempiProjection::getTempoSemina).count();
+
+				if (counterNumeroColtureAnno == 0L) {
+					continue;
+				}
+
+				double sommaTempoGerminazione = projectionList.stream().filter(
+						p -> p.getNomeOrtaggio().equals(prodotto) && p.getAnnoSemina().equals(annoRiferimento))
+						.mapToDouble(ProduzioneJoinColturaTempiProjection::getTempoGerminazione).sum();
+
+				double sommaTempoTrapianto = projectionList.stream().filter(
+						p -> p.getNomeOrtaggio().equals(prodotto) && p.getAnnoSemina().equals(annoRiferimento))
+						.mapToDouble(ProduzioneJoinColturaTempiProjection::getTempoTrapianto).sum();
+
+				double sommaTempoMaturazione = projectionList.stream().filter(
+						p -> p.getNomeOrtaggio().equals(prodotto) && p.getAnnoSemina().equals(annoRiferimento))
+						.mapToDouble(ProduzioneJoinColturaTempiProjection::getTempoMaturazione).sum();
+
+				double sommaTempoRaccolta = projectionList.stream().filter(
+						p -> p.getNomeOrtaggio().equals(prodotto) && p.getAnnoSemina().equals(annoRiferimento))
+						.mapToDouble(ProduzioneJoinColturaTempiProjection::getTempoRaccolta).sum();
+
+				List<Double> listaMedieTempi = Arrays.asList(sommaTempoSemina / counterNumeroColtureAnno,
+						sommaTempoGerminazione / counterNumeroColtureAnno,
+						sommaTempoTrapianto / counterNumeroColtureAnno,
+						sommaTempoMaturazione / counterNumeroColtureAnno,
+						sommaTempoRaccolta / counterNumeroColtureAnno);
+
+				ProduzioneColturaTempiDTO dto = new ProduzioneColturaTempiDTO(prodotto, listaMedieTempi);
+
+				counterList.add(dto);
+			}
+
+			response.put(annoRiferimento, counterList);
 		}
 
 		return response;

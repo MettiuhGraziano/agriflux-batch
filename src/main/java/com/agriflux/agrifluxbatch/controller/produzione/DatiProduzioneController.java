@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.RestController;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneDTO;
+import com.agriflux.agrifluxshared.dto.produzione.ProduzioneParticellaColturaOrtaggioDTO;
 import com.agriflux.agrifluxshared.service.produzione.DatiProduzioneService;
 
 @RestController("api/data/produzione")
@@ -36,6 +37,12 @@ public class DatiProduzioneController implements DatiProduzioneService {
 	@GetMapping("/findProduzioneJoinColturaTempi")
 	public Map<String, List<ProduzioneColturaTempiDTO>> findProduzioneJoinColturaTempi() {
 		return datiProduzioneService.findProduzioneJoinColturaTempi();
+	}
+
+	@Override
+	@GetMapping("/findProduzioneParticellaColturaOrtaggio")
+	public Map<Long, ProduzioneParticellaColturaOrtaggioDTO> findProduzioneParticellaColturaOrtaggio() {
+		return datiProduzioneService.findProduzioneParticellaColturaOrtaggio();
 	}
 
 }

@@ -1,4 +1,4 @@
-package com.agriflux.agrifluxbatch.controller;
+package com.agriflux.agrifluxbatch.controller.terreno;
 
 import java.util.List;
 

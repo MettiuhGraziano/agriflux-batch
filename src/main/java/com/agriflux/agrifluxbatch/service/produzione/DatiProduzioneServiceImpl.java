@@ -14,13 +14,15 @@ import org.springframework.stereotype.Service;
 
 import com.agriflux.agrifluxbatch.entity.Produzione;
 import com.agriflux.agrifluxbatch.repository.DatiProduzioneRepository;
-import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaFatturatoProjection;
-import com.agriflux.agrifluxbatch.repository.projection.ProduzioneJoinColturaTempiProjection;
+import com.agriflux.agrifluxbatch.repository.projection.ProduzioneParticellaColturaOrtaggioProjection;
+import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneJoinColturaFatturatoProjection;
+import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneJoinColturaTempiProjection;
 import com.agriflux.agrifluxbatch.repository.projection.produzione.ProduzioneQuantitaJoinColturaProjection;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneColturaTempiDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneDTO;
 import com.agriflux.agrifluxshared.dto.produzione.ProduzioneJoinColturaFatturatoDTO;
+import com.agriflux.agrifluxshared.dto.produzione.ProduzioneParticellaColturaOrtaggioDTO;
 import com.agriflux.agrifluxshared.service.produzione.DatiProduzioneService;
 
 @Service
@@ -235,6 +237,25 @@ public class DatiProduzioneServiceImpl implements DatiProduzioneService {
 			}
 
 			response.put(annoRiferimento, counterList);
+		}
+
+		return response;
+	}
+
+	@Override
+	public Map<Long, ProduzioneParticellaColturaOrtaggioDTO> findProduzioneParticellaColturaOrtaggio() {
+		Map<Long, ProduzioneParticellaColturaOrtaggioDTO> response = new HashMap<Long, ProduzioneParticellaColturaOrtaggioDTO>();
+
+		List<ProduzioneParticellaColturaOrtaggioProjection> projectionList = datiProduzioneRepository
+				.findProduzioneParticellaColturaOrtaggioProjection();
+
+		for (ProduzioneParticellaColturaOrtaggioProjection projection : projectionList) {
+
+			ProduzioneParticellaColturaOrtaggioDTO dto = new ProduzioneParticellaColturaOrtaggioDTO(projection.getNomeOrtaggio(),
+					projection.getDataRaccolto(), projection.getIdParticella(), projection.getEstensione(),
+					projection.getPendenza(), projection.getEsposizione(), projection.getTipologia());
+
+			response.put(projection.getIdProduzione(), dto);
 		}
 
 		return response;

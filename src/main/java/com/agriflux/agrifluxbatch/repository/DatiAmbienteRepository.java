@@ -7,6 +7,6 @@ import org.springframework.stereotype.Repository;
 import com.agriflux.agrifluxbatch.entity.Ambiente;
 
 @Repository
-public interface DatiAmbientaliRepository extends CrudRepository<Ambiente, Long>, PagingAndSortingRepository<Ambiente, Long> {
+public interface DatiAmbienteRepository extends CrudRepository<Ambiente, Long>, PagingAndSortingRepository<Ambiente, Long> {
 
 }

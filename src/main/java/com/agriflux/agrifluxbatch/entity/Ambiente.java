@@ -10,7 +10,7 @@ import jakarta.persistence.Id;
 import jakarta.persistence.Table;
 
 @Entity
-@Table(name = "DATI_AMBIENTALI")
+@Table(name = "DATI_AMBIENTE")
 public class Ambiente {
 	
 	@Id

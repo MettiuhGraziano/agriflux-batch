@@ -37,13 +37,13 @@ public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemPr
 			if (counterAnnoRilevazione != dataOdierna.getYear()) {
 
 				generaRilevazioneAmbiente(datiStagioneRecord, response, counterAnnoRilevazione, meseInizio,
-						giornoInizio, meseFine, giornoFine);
+						giornoInizio, meseFine, giornoFine, datiStagioneRecord.nome());
 				
 			} else if (counterAnnoRilevazione == dataOdierna.getYear() && dataOdierna.getMonthValue() <= meseFine
 					&& dataOdierna.getMonthValue() >= meseInizio) {
 				
 				generaRilevazioneAmbiente(datiStagioneRecord, response, counterAnnoRilevazione, meseInizio,
-						giornoInizio, dataOdierna.getMonthValue(), dataOdierna.getDayOfMonth());
+						giornoInizio, dataOdierna.getMonthValue(), dataOdierna.getDayOfMonth(), datiStagioneRecord.nome());
 			}
 
 			counterAnnoRilevazione++;
@@ -53,7 +53,7 @@ public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemPr
 	}
 
 	private void generaRilevazioneAmbiente(DatiStagioneRecord datiStagioneRecord, List<DatiAmbienteRecord> response,
-			int counterAnnoRilevazione, int meseInizio, int giornoInizio, int meseFine, int giornoFine) {
+			int counterAnnoRilevazione, int meseInizio, int giornoInizio, int meseFine, int giornoFine, String nomeStagione) {
 		
 		BigDecimal temperatura = generaRandomBigDecimalFromRange(datiStagioneRecord.rangeTemperatura());
 		BigDecimal umidita = generaRandomBigDecimalFromRange(datiStagioneRecord.rangeUmidita());
@@ -61,9 +61,11 @@ public class DatiAmbienteCustomProcessor extends DatiProcessor implements ItemPr
 		BigDecimal irraggiamento = generaRandomBigDecimalFromRange(datiStagioneRecord.rangeIrraggiamento());
 		BigDecimal ombreggiamento = generaRandomBigDecimalFromRange(datiStagioneRecord.rangeOmbreggiamento());
 		
-
 		LocalDate dataInizioRange = LocalDate.of(counterAnnoRilevazione, meseInizio, giornoInizio);
 		LocalDate dataFineRange = LocalDate.of(counterAnnoRilevazione, meseFine, giornoFine);
+		if (nomeStagione.equalsIgnoreCase("INVERNO")) {
+			dataFineRange = LocalDate.of(counterAnnoRilevazione+1, meseFine, giornoFine);
+		}
 
 		LocalDate dataRilevazione = generaDataRandomFromRange(dataInizioRange, dataFineRange);
 

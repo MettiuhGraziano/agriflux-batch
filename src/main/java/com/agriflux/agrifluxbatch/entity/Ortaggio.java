@@ -30,6 +30,7 @@ public class Ortaggio {
 	
 	private BigDecimal pesoMedio;
 	private BigDecimal volumeMq;
+	private BigDecimal consumoIdricoMedio;
 	
 	@OneToOne
     @JoinColumn(name = "ID_FAMIGLIA")
@@ -155,6 +156,14 @@ public class Ortaggio {
 
 	public void setDatiEconomici(List<DatoEconomico> datiEconomici) {
 		this.datiEconomici = datiEconomici;
+	}
+
+	public BigDecimal getConsumoIdricoMedio() {
+		return consumoIdricoMedio;
+	}
+
+	public void setConsumoIdricoMedio(BigDecimal consumoIdricoMedio) {
+		this.consumoIdricoMedio = consumoIdricoMedio;
 	}
 	
 }

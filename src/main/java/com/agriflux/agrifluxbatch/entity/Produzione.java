@@ -23,6 +23,7 @@ public class Produzione {
 	private BigDecimal quantitaRaccoltoMarcio;
 	private BigDecimal quantitaRaccoltoTerzi;
 	private BigDecimal fatturatoRaccolto;
+	private BigDecimal consumoIdrico;
 	
 	private int numLavoratori;
 	
@@ -102,6 +103,14 @@ public class Produzione {
 
 	public void setColtura(Coltura coltura) {
 		this.coltura = coltura;
+	}
+
+	public BigDecimal getConsumoIdrico() {
+		return consumoIdrico;
+	}
+
+	public void setConsumoIdrico(BigDecimal consumoIdrico) {
+		this.consumoIdrico = consumoIdrico;
 	}
 	
 }

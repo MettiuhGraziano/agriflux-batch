@@ -12,7 +12,7 @@ public class DatiProduzioneRowMapper implements RowMapper<DatiColturaJoinPartice
 	@Override
 	public DatiColturaJoinParticellaRecord mapRow(ResultSet rs, int rowNum) throws SQLException {
 		return new DatiColturaJoinParticellaRecord(rs.getLong("ID_COLTURA"), rs.getBigDecimal("PREZZO_KG"),
-				rs.getBigDecimal("ESTENSIONE"), rs.getBigDecimal("PESO_MEDIO"), rs.getBigDecimal("VOLUME_MQ"));
+				rs.getBigDecimal("ESTENSIONE"), rs.getBigDecimal("PESO_MEDIO"), rs.getBigDecimal("VOLUME_MQ"), rs.getBigDecimal("CONSUMO_IDRICO_MEDIO"));
 	}
 
 }

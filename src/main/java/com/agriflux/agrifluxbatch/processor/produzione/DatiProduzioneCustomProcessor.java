@@ -23,12 +23,14 @@ public class DatiProduzioneCustomProcessor extends DatiProcessor implements Item
 		
 		BigDecimal fatturatoRaccolto = quantitaRaccoltoVenduto.multiply(item.pesoMedio());
 		
+		BigDecimal consumoIdrico = applicaVariazioneDistribuzione(item.consumoIdricoMedio().multiply(item.estensione()));
+		
 		int numLavoratori = generaRandomIntFromRange(1, 11);
 		
 		BigDecimal speseProduzione = generaRandomBigDecimalFromRange("100.0|650.0");
 		
 		return new DatiProduzioneRecord(quantitaRaccolto, quantitaRaccoltoVenduto, quantitaRaccoltoMarcio,
-				quantitaRaccoltoTerzi, fatturatoRaccolto, numLavoratori, speseProduzione, item.idColtura());
+				quantitaRaccoltoTerzi, fatturatoRaccolto, consumoIdrico, numLavoratori, speseProduzione, item.idColtura());
 	}
 	
 	private BigDecimal calcoloQuantitaRaccoltoVenduto(BigDecimal quantitaRaccolto) {

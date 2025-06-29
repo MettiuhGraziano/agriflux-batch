@@ -278,7 +278,7 @@ public class AgrifluxJobsConfiguration {
 				.dataSource(batchDataSource())
 				.name("datiProduzioneCustomItemReader")
 				.sql("""
-						SELECT c.ID_COLTURA, c.PREZZO_KG, p.ESTENSIONE, o.PESO_MEDIO, o.VOLUME_MQ
+						SELECT c.ID_COLTURA, c.PREZZO_KG, p.ESTENSIONE, o.PESO_MEDIO, o.VOLUME_MQ, o.CONSUMO_IDRICO_MEDIO
 						FROM DATI_COLTURA c
 						LEFT JOIN DATI_PARTICELLA p ON c.ID_PARTICELLA = p.ID_PARTICELLA
 						LEFT JOIN DATI_ORTAGGIO o ON c.ID_ORTAGGIO = o.ID_ORTAGGIO
@@ -297,10 +297,10 @@ public class AgrifluxJobsConfiguration {
 	JdbcBatchItemWriter<DatiProduzioneRecord> datiProduzioneDataTableWriter(DataSource dataSource) {
 		String sql = """
 				INSERT INTO DATI_PRODUZIONE (QUANTITA_RACCOLTO, QUANTITA_RACCOLTO_VENDUTO,
-				QUANTITA_RACCOLTO_MARCIO, QUANTITA_RACCOLTO_TERZI, FATTURATO_RACCOLTO,
+				QUANTITA_RACCOLTO_MARCIO, QUANTITA_RACCOLTO_TERZI, FATTURATO_RACCOLTO, CONSUMO_IDRICO,
 				 	NUM_LAVORATORI, SPESE_PRODUZIONE, ID_COLTURA)
 				VALUES (:quantitaRaccolto, :quantitaRaccoltoVenduto, :quantitaRaccoltoMarcio,
-					:quantitaRaccoltoTerzi, :fatturatoRaccolto, :numLavoratori, :speseProduzione, :idColtura)
+					:quantitaRaccoltoTerzi, :fatturatoRaccolto, :consumoIdrico, :numLavoratori, :speseProduzione, :idColtura)
 				""";
 		return new JdbcBatchItemWriterBuilder<DatiProduzioneRecord>().dataSource(dataSource).sql(sql).beanMapped()
 				.build();

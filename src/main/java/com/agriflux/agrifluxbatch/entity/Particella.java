@@ -40,6 +40,9 @@ public class Particella {
 	@OneToMany(mappedBy = "particella")
 	private List<Coltura> colture;
 	
+	@OneToMany(mappedBy = "particella")
+	private List<Fatturato> fatturati;
+	
 	public long getIdParticella() {
 		return idParticella;
 	}
@@ -134,6 +137,14 @@ public class Particella {
 
 	public void setColture(List<Coltura> colture) {
 		this.colture = colture;
+	}
+	
+	public List<Fatturato> getFatturati() {
+		return fatturati;
+	}
+
+	public void setFatturati(List<Fatturato> fatturati) {
+		this.fatturati = fatturati;
 	}
 	
 }
